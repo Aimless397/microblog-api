@@ -1,11 +1,30 @@
 {
   "compilerOptions": {
+    "module": "CommonJS",
     "noEmit": true,
     "strictNullChecks": true,
     "strict": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
-  }
+    "noUnusedParameters": false,
+    "target": "es2017",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "incremental": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "strictPropertyInitialization": false
+  },
+  "files": [
+    "./global.d.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
 }
