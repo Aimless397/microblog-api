@@ -1,0 +1,57 @@
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid()) @db.Uuid
+  username      String
+  email         String    @unique
+  password      String
+  firstName     String    @map("first_name")
+  lastName      String    @map("last_name")
+  public        Boolean   @default(false)
+  role          String    @default("user")
+  emailPublic   Boolean   @default(false) @map("email_public")
+  namePublic    Boolean   @default(false) @map("name_public")
+  verified      Boolean
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  tokens Token[]
+  posts Post[]
+
+  @@map("users")
+}
+
+model Token {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid()) @db.Uuid
+  userId        Int       @map("user_id")
+  jti           String    @unique @default(uuid())
+  aud           String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("tokens")
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @default(uuid()) @db.Uuid
+  userId      Int       @map("user_id")
+  content     Text
+  completed   Boolean
+  likes       Int
+  dislikes    Int
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("posts")
+}
