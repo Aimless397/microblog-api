@@ -8,34 +8,34 @@ info:
 host: "http://localhost:3000"
 basePath: "/api-docs"
 tags:
-- name: "user"
-  description: "CRUD Operations with Users"
-- name: "auth"
-  description: "Users Authentication"
-- name: "posts"
-  description: "Operations with posts on microblog"
-- name: "comments"
-  description: "Operations with comments on posts"
+  - name: "user"
+    description: "CRUD Operations with Users"
+  - name: "auth"
+    description: "Users Authentication"
+  - name: "posts"
+    description: "Operations with posts on microblog"
+  - name: "comments"
+    description: "Operations with comments on posts"
 schemes:
-- "https"
-- "http"
+  - "https"
+  - "http"
 paths:
   /auth/login:
     post:
       tags:
-      - "auth"
+        - "auth"
       summary: "Login into an user account"
       operationId: "login"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters:
-      - in: "body"
-        name: "token"
-        description: "Create JWT for the user"
-        required: true
-        schema:
-          $ref: "#/definitions/Token"
+        - in: "body"
+          name: "token"
+          description: "Create JWT for the user"
+          required: true
+          schema:
+            $ref: "#/definitions/Token"
       responses:
         "200":
           description: "successful operation"
@@ -43,23 +43,23 @@ paths:
           description: "unauthorized"
         "501":
           description: "internal server error"
-  
+
   /user:
     post:
       tags:
-      - "user"
+        - "user"
       summary: "Create user"
       operationId: "createUser"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
+        - in: "body"
+          name: "body"
+          description: "Created user object"
+          required: true
+          schema:
+            $ref: "#/definitions/User"
       responses:
         "200":
           description: "successful operation"
@@ -73,24 +73,24 @@ paths:
   /user/login:
     get:
       tags:
-      - "user"
+        - "user"
       summary: "Logs user into the system"
       description: ""
       operationId: "loginUser"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
+        - name: "username"
+          in: "query"
+          description: "The user name for login"
+          required: true
+          type: "string"
+        - name: "password"
+          in: "query"
+          description: "The password for login in clear text"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "successful operation"
@@ -101,13 +101,13 @@ paths:
   /user/logout:
     get:
       tags:
-      - "user"
+        - "user"
       summary: "Logs out current logged in user session"
       description: ""
       operationId: "logoutUser"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters: []
       responses:
         default:
@@ -116,18 +116,18 @@ paths:
   /user/{uuid}:
     get:
       tags:
-      - "user"
+        - "user"
       summary: "Get user by id"
       operationId: "getUserByID"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters:
-      - name: "uuid"
-        in: "path"
-        description: "The id of an user to be fetched"
-        required: true
-        type: "string"
+        - name: "uuid"
+          in: "path"
+          description: "The id of an user to be fetched"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "successful operation"
@@ -139,31 +139,31 @@ paths:
           description: "User not found"
     put:
       tags:
-      - "user"
+        - "user"
       summary: "Updated user"
       description: "This can only be done by the same user or an admin user"
       operationId: "updateUser"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters:
-      - name: "uuid"
-        in: "path"
-        description: "id of the user that is been updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "fields to be updated"
-        properties:  
-          firstName:
-            type: "string"
-          lastName:
-            type: "string"
-          email:
-            type: "string"
+        - name: "uuid"
+          in: "path"
+          description: "id of the user that is been updated"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "fields to be updated"
+          properties:
+            firstName:
+              type: "string"
+            lastName:
+              type: "string"
+            email:
+              type: "string"
       responses:
-        "200": 
+        "200":
           description: "operation completed succesfully"
           schema:
             $ref: "#/definitions/User"
@@ -173,19 +173,19 @@ paths:
           description: "User not found"
     delete:
       tags:
-      - "user"
+        - "user"
       summary: "Delete user"
       description: "This can only be done by a user with admin role"
       operationId: "deleteUser"
       produces:
-      - "application/xml"
-      - "application/json"
+        - "application/xml"
+        - "application/json"
       parameters:
-      - name: "uuid"
-        in: "path"
-        description: "The id of the user to be deleted"
-        required: true
-        type: "string"
+        - name: "uuid"
+          in: "path"
+          description: "The id of the user to be deleted"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "operation completed succesfully"
@@ -202,7 +202,7 @@ paths:
         "400":
           description: "Invalid username supplied"
         "404":
-          description: "User not found"  
+          description: "User not found"
 
   /user/{uuid}/name_public:
     tags:
@@ -212,7 +212,7 @@ paths:
         "400":
           description: "Invalid username supplied"
         "404":
-          description: "User not found"  
+          description: "User not found"
 
 definitions:
   User:
@@ -238,28 +238,26 @@ definitions:
         type: "string"
         description: "User Role"
         enum:
-        - "user"
-        - "admin"
-        - "mod"
+          - "user"
+          - "admin"
+          - "mod"
       public_email:
         type: "string"
         description: "User email status"
         enum:
-        - "public"
-        - "private"
-        type: "string"
+          - "public"
+          - "private"
       public_name:
         type: "string"
         description: "User real name status"
         enum:
-        - "public"
-        - "private"
-        type: "string"
-      created_at: 
+          - "public"
+          - "private"
+      created_at:
         type: "timestamp"
         format: "datetime"
         description: "user's creation time"
-      updated_at: 
+      updated_at:
         type: "timestamp"
         format: "datetime"
         description: "last update on user"
