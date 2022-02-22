@@ -19,7 +19,11 @@ tags:
 schemes:
   - "https"
   - "http"
+
+#Endpoints
+
 paths:
+  #Auth
   /auth/login:
     post:
       tags:
@@ -30,20 +34,43 @@ paths:
         - "application/xml"
         - "application/json"
       parameters:
-        - in: "body"
-          name: "token"
-          description: "Create JWT for the user"
+        - name: "username"
+          in: "query"
+          description: "The user name for login"
           required: true
-          schema:
-            $ref: "#/definitions/Token"
+          type: "string"
+        - name: "password"
+          in: "query"
+          description: "The password for login in clear text"
+          required: true
+          type: "string"
       responses:
         "200":
           description: "successful operation"
-        "401":
-          description: "unauthorized"
+          name: "token"
+          schema:
+            $ref: "#/definitions/Token"
+        "400":
+          description: "Invalid username/password supplied"
         "501":
           description: "internal server error"
 
+  /auth/logout:
+    get:
+      tags:
+        - "auth"
+      summary: "Logs out user session"
+      description: ""
+      operationId: "logoutUser"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "successful operation"
+
+  #User
   /user:
     post:
       tags:
@@ -69,50 +96,7 @@ paths:
           description: "unauthorized"
         "500":
           description: "Internal Server Error"
-
-  /user/login:
-    get:
-      tags:
-        - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-        - "application/xml"
-        - "application/json"
-      parameters:
-        - name: "username"
-          in: "query"
-          description: "The user name for login"
-          required: true
-          type: "string"
-        - name: "password"
-          in: "query"
-          description: "The password for login in clear text"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            type: "string"
-        "400":
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-        - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-        - "application/xml"
-        - "application/json"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-
+  
   /user/{uuid}:
     get:
       tags:
@@ -213,7 +197,113 @@ paths:
           description: "Invalid username supplied"
         "404":
           description: "User not found"
-
+  #Posts
+  /posts:
+    post:
+      tags:
+        - "posts"
+      summary: "Creates a new post"
+      operationId: "createPost"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "post"
+          description: "Created Post"
+          required: true
+          schema:
+            $ref: "#/definitions/Post"
+      responses:
+          "200":
+            description: "successful operation"
+          "401":
+            description: "unauthorized"
+          "501":
+            description: "internal server error"
+  /posts/getAll:
+    get:
+      tags:
+        - "posts"
+      summary: "Gets an array of Posts"
+      operationId: "getAll"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "posts"
+          description: "Get Posts"
+          required: true
+          data: []
+  /posts/{id}:
+    get:
+      tags:
+        - "posts"
+      summary: "Gets an especific post"
+      operationId: "getPost"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "id"
+          description: "The id of the post"
+          required: true
+          responses:
+            "200":
+              description: "successful operation"
+              schema:
+              $ref: "#/definitions/Post"
+            "400":
+              description: "unauthorized"
+            "500":
+              description: "Internal Server Error"
+    delete:
+      tags:
+        - "posts"
+      summary: "Delete one post from db"
+      operationId: "deletePost"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "id"
+          description: "The id from the post being deleted"
+          required: true
+          responses:
+            "200":
+              description: "successful operation"
+              schema:
+              $ref: "#/definitions/Post"
+            "400":
+              description: "unauthorized"
+            "500":
+              description: "Internal Server Error"
+    put:
+      tags:
+        - "posts"
+      summary: "Modifies a post"
+      operationId: "updatePost"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "id"
+          description: "The id from the post being updated"
+          required: true
+          responses:
+            "200":
+              description: "successful operation"
+              schema:
+              $ref: "#/definitions/Post"
+            "400":
+              description: "unauthorized"
+            "500":
+              description: "Internal Server Error"
+# Object Definitions
 definitions:
   User:
     type: "object"
@@ -264,13 +354,92 @@ definitions:
         default: "null"
     xml:
       name: "User"
-  ApiResponse:
+  Post:
     type: "object"
     properties:
-      code:
+      id:
         type: "integer"
-        format: "int32"
-      type:
+        format: "int64"
+      uuid:
+        type: "UUID"
+        format: "string"
+      user_id: 
+        type: "UUID"
+        format: "string"
+      content:
         type: "string"
-      message:
+      completed:
+        type: "boolean"
+      likes:
+        type: "integer"
+        format: "int64"
+      dislikes:
+        type: "integer"
+        format: "int64"
+      created_at: 
+        type: "timestamp"
+        format: "datetime"
+        description: "post creation time"
+      updated_at: 
+        type: "timestamp"
+        format: "datetime"
+        description: "last update of the post"
+    xml:
+      name: "Post"
+  Comment:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      uuid:
+        type: "UUID"
+        format: "string"
+      user_id: 
+        type: "UUID"
+        format: "string"
+      post_id: 
+        type: "UUID"
+        format: "string"
+      content:
         type: "string"
+      completed:
+        type: "boolean"
+      likes:
+        type: "integer"
+        format: "int64"
+      dislikes:
+        type: "integer"
+        format: "int64"
+      created_at: 
+        type: "timestamp"
+        format: "datetime"
+        description: "post creation time"
+      updated_at: 
+        type: "timestamp"
+        format: "datetime"
+        description: "last update of the post"
+    xml:
+      name: "Comment"
+  Token: 
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      uuid:
+        type: "UUID"
+        format: "string"
+      user_id: 
+        type: "UUID"
+        format: "string"
+      jti: 
+        format: "string"
+      aud:
+        type: "string"
+      created_at: 
+        type: "timestamp"
+        format: "datetime"
+        description: "token creation time"
+      xml:
+        name: "Token"
