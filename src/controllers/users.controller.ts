@@ -8,7 +8,6 @@ export async function find(req: Request, res: Response): Promise<void> {
 };
 
 export async function create(req: Request, res: Response): Promise<void> {
-  /* const result =  await UsersService.find(); */
 
   res.status(200).json('creating');
 };
