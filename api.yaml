@@ -31,7 +31,6 @@ paths:
       summary: "Login into an user account"
       operationId: "login"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - name: "username"
@@ -60,30 +59,28 @@ paths:
       tags:
         - "auth"
       summary: "Logs out user session"
-      description: ""
+      description: "Delete session token from db"
       operationId: "logoutUser"
       produces:
-        - "application/xml"
         - "application/json"
-      parameters: []
       responses:
         "200":
           description: "successful operation"
+        "500":
+          description: "Internal Server Error"
 
-  #User
-  /user:
+  /auth/signup:
     post:
       tags:
         - "user"
       summary: "Create user"
       operationId: "createUser"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: "body"
           name: "body"
-          description: "Created user object"
+          description: "User data"
           required: true
           schema:
             $ref: "#/definitions/User"
@@ -96,39 +93,16 @@ paths:
           description: "unauthorized"
         "500":
           description: "Internal Server Error"
-  
-  /user/{uuid}:
-    get:
-      tags:
-        - "user"
-      summary: "Get user by id"
-      operationId: "getUserByID"
-      produces:
-        - "application/xml"
-        - "application/json"
-      parameters:
-        - name: "uuid"
-          in: "path"
-          description: "The id of an user to be fetched"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        "400":
-          description: "Invalid username supplied"
-        "404":
-          description: "User not found"
-    put:
+  #User
+
+  /users/{uuid}:
+    patch:
       tags:
         - "user"
       summary: "Updated user"
       description: "This can only be done by the same user or an admin user"
       operationId: "updateUser"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - name: "uuid"
@@ -155,6 +129,7 @@ paths:
           description: "Invalid user supplied"
         "404":
           description: "User not found"
+
     delete:
       tags:
         - "user"
@@ -162,7 +137,6 @@ paths:
       description: "This can only be done by a user with admin role"
       operationId: "deleteUser"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - name: "uuid"
@@ -179,7 +153,10 @@ paths:
           description: "User not found"
 
   /user/{uuid}/email_public:
-    put:
+    patch:
+      tags:
+        - "user"
+      summary: "updates visibility of email"
       responses:
         "200":
           description: "operation completed succesfully"
@@ -189,15 +166,20 @@ paths:
           description: "User not found"
 
   /user/{uuid}/name_public:
-    tags:
+    patch:
+      tags:
+        - "user"
+      summary: "updates visibility of user's real name"
       responses:
         "200":
           description: "operation completed succesfully"
         "400":
-          description: "Invalid username supplied"
+          description: "Invalid user"
         "404":
           description: "User not found"
+
   #Posts
+
   /posts:
     post:
       tags:
@@ -205,37 +187,34 @@ paths:
       summary: "Creates a new post"
       operationId: "createPost"
       produces:
-        - "application/xml"
         - "application/json"
-      parameters:
-        - in: "body"
-          name: "post"
-          description: "Created Post"
-          required: true
+      responses:
+        "200":
+          description: "successful operation"
           schema:
             $ref: "#/definitions/Post"
-      responses:
-          "200":
-            description: "successful operation"
-          "401":
-            description: "unauthorized"
-          "501":
-            description: "internal server error"
-  /posts/getAll:
+        "401":
+          description: "unauthorized"
+        "501":
+          description: "internal server error"
+
     get:
       tags:
         - "posts"
       summary: "Gets an array of Posts"
       operationId: "getAll"
       produces:
-        - "application/xml"
         - "application/json"
-      parameters:
-        - in: "body"
-          name: "posts"
-          description: "Get Posts"
-          required: true
-          data: []
+      responses:
+        "200":
+          description: "A list of posts"
+          schema:
+            $ref: "#/definitions/Post"
+        "400":
+          description: "Something went wrong"
+        "500":
+          description: "Internal Server Error"
+
   /posts/{id}:
     get:
       tags:
@@ -243,66 +222,174 @@ paths:
       summary: "Gets an especific post"
       operationId: "getPost"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: "path"
           name: "id"
           description: "The id of the post"
           required: true
-          responses:
-            "200":
-              description: "successful operation"
-              schema:
-              $ref: "#/definitions/Post"
-            "400":
-              description: "unauthorized"
-            "500":
-              description: "Internal Server Error"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Post"
+        "400":
+          description: "Something went wrong"
+        "501":
+          description: "Internal Server Error"
+
     delete:
       tags:
         - "posts"
       summary: "Delete one post from db"
       operationId: "deletePost"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: "path"
           name: "id"
           description: "The id from the post being deleted"
           required: true
-          responses:
-            "200":
-              description: "successful operation"
-              schema:
-              $ref: "#/definitions/Post"
-            "400":
-              description: "unauthorized"
-            "500":
-              description: "Internal Server Error"
-    put:
+      responses:
+        "200":
+          description: "your post has been deleted succesfully"
+        "401":
+          description: "unauthorized"
+        "501":
+          description: "Internal Server Error"
+    patch:
       tags:
         - "posts"
       summary: "Modifies a post"
       operationId: "updatePost"
       produces:
-        - "application/xml"
         - "application/json"
       parameters:
         - in: "path"
           name: "id"
           description: "The id from the post being updated"
           required: true
-          responses:
-            "200":
-              description: "successful operation"
-              schema:
-              $ref: "#/definitions/Post"
-            "400":
-              description: "unauthorized"
-            "500":
-              description: "Internal Server Error"
+        - in: "body"
+          name: "content"
+          description: "The new content of the post"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Post"
+        "400":
+          description: "unauthorized"
+        "500":
+          description: "Internal Server Error"
+
+  #comments
+
+  /comments:
+    post:
+      tags:
+        - "comments"
+      summary: "Creates a new comment on a post"
+      operationId: "createComment"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Comment"
+        "401":
+          description: "unauthorized"
+        "501":
+          description: "internal server error"
+
+    get:
+      tags:
+        - "comments"
+      summary: "Gets comments on a post"
+      operationId: "getComments"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "A list of comments"
+          schema:
+            $ref: "#/definitions/Comment"
+        "400":
+          description: "Something went wrong"
+        "500":
+          description: "Internal Server Error"
+
+  /comments/{id}:
+    get:
+      tags:
+        - "comments"
+      summary: "Gets an especific comment"
+      operationId: "getComment"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "id"
+          description: "The id of the comment"
+          required: true
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Comment"
+        "400":
+          description: "Something went wrong"
+        "404":
+          description: "Comment not found"
+        "501":
+          description: "Internal Server Error"
+
+    delete:
+      tags:
+        - "comments"
+      summary: "Delete comment from db"
+      operationId: "deleteComment"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "id"
+          description: "The id from the comment being deleted"
+          required: true
+      responses:
+        "200":
+          description: "your comment has been deleted succesfully"
+        "401":
+          description: "unauthorized"
+        "501":
+          description: "Internal Server Error"
+    patch:
+      tags:
+        - "comments"
+      summary: "Modifies a comment"
+      operationId: "updateComment"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "id"
+          description: "The id from the comment being updated"
+          required: true
+        - in: "body"
+          name: "content"
+          description: "The new content of the comment"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Comment"
+        "400":
+          description: "unauthorized"
+        "404":
+          description: "comment not found"
+        "500":
+          description: "Internal Server Error"
+
 # Object Definitions
 definitions:
   User:
@@ -321,8 +408,6 @@ definitions:
       lastName:
         type: "string"
       email:
-        type: "string"
-      password:
         type: "string"
       role:
         type: "string"
@@ -354,6 +439,7 @@ definitions:
         default: "null"
     xml:
       name: "User"
+
   Post:
     type: "object"
     properties:
@@ -363,7 +449,7 @@ definitions:
       uuid:
         type: "UUID"
         format: "string"
-      user_id: 
+      user_id:
         type: "UUID"
         format: "string"
       content:
@@ -376,16 +462,17 @@ definitions:
       dislikes:
         type: "integer"
         format: "int64"
-      created_at: 
+      created_at:
         type: "timestamp"
         format: "datetime"
         description: "post creation time"
-      updated_at: 
+      updated_at:
         type: "timestamp"
         format: "datetime"
         description: "last update of the post"
     xml:
       name: "Post"
+
   Comment:
     type: "object"
     properties:
@@ -395,10 +482,10 @@ definitions:
       uuid:
         type: "UUID"
         format: "string"
-      user_id: 
+      user_id:
         type: "UUID"
         format: "string"
-      post_id: 
+      post_id:
         type: "UUID"
         format: "string"
       content:
@@ -411,17 +498,18 @@ definitions:
       dislikes:
         type: "integer"
         format: "int64"
-      created_at: 
+      created_at:
         type: "timestamp"
         format: "datetime"
         description: "post creation time"
-      updated_at: 
+      updated_at:
         type: "timestamp"
         format: "datetime"
         description: "last update of the post"
     xml:
       name: "Comment"
-  Token: 
+
+  Token:
     type: "object"
     properties:
       id:
@@ -430,14 +518,14 @@ definitions:
       uuid:
         type: "UUID"
         format: "string"
-      user_id: 
+      user_id:
         type: "UUID"
         format: "string"
-      jti: 
+      jti:
         format: "string"
       aud:
         type: "string"
-      created_at: 
+      created_at:
         type: "timestamp"
         format: "datetime"
         description: "token creation time"
