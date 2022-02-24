@@ -19,7 +19,8 @@ export class UsersService {
   static async create({
     password,
     ...input
-  }: CreateUserDto): Promise<TokenDto> {
+  }: CreateUserDto): Promise<boolean> {
+    /* }: CreateUserDto): Promise<TokenDto> { */
     const userFound = await prisma.user.findUnique({
       where: { email: input.email },
       select: { id: true },
@@ -35,11 +36,22 @@ export class UsersService {
         ...input,
         password: hashSync(password, 10)
       }
-    })
+    });
+
+
     const token = await AuthService.createToken(user.uuid);
+    const tokenCreated = AuthService.generateAccessToken(token.jti);
+    // send email with tokenCreated
+    // http://localhost:3000/api/v1/users/verify/:token
 
-    // send email
 
-    return AuthService.generateAccessToken(token.jti);
+
+    return true;
+  }
+
+  static async findOne(uuid: string): Promise<UserDto> {
+    const user = await prisma.user.findUnique({ where: { uuid } });
+
+    return plainToClass(UserDto, user);
   }
 }

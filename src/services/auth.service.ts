@@ -30,11 +30,11 @@ export class AuthService {
     return tokenGenerated;
   }
 
-  static async createToken(userId: string): Promise<Token> {
+  static async createToken(uuid: string): Promise<Token> {
     try {
       const token = await prisma.token.create({
         data: {
-          userId,
+          userId: uuid,
         },
       })
 
@@ -71,8 +71,8 @@ export class AuthService {
       new Date(now).setSeconds(
         parseInt(process.env.JWT_EXPIRATION_TIME as string, 10),
       ) / 1000,
-    )
-    const iat = Math.floor(now / 1000)
+    );
+    const iat = Math.floor(now / 1000);
 
     const accessToken = sign(
       {

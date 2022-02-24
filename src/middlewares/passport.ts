@@ -18,7 +18,7 @@ passport.use(
           user: { select: { uuid: true } },
         },
         rejectOnNotFound: false,
-      })
+      });
 
       if (!token) {
         return done(new Unauthorized('Invalid credentials'), null)

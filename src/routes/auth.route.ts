@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import asyncHandler from 'express-async-handler';
+import passport from 'passport';
 import {
   /* signup, */
   login,
@@ -16,7 +17,7 @@ export function authRoutes(): Router {
     .post(asyncHandler(login));
 
   router.route('/logout')
-    .post(asyncHandler(logout));
+    .post(passport.authenticate('jwt', { session: false }), asyncHandler(logout));
 
   return router;
 }

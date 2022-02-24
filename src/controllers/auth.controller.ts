@@ -22,5 +22,5 @@ export async function logout(req: Request, res: Response) {
 
   await AuthService.logout(accessToken);
 
-  res.status(204).send();
+  res.status(200).json('Logged out');
 }

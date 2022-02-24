@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { Request, Response } from 'express';
 import { CreateUserDto } from '../dtos/users/request/create-user.dto';
@@ -15,13 +16,32 @@ export async function create(req: Request, res: Response): Promise<void> {
 
   const result = await UsersService.create(dto);
 
-  res.status(200).json(result);
+  const message = 'Please verify the user email';
+
+  /* res.status(200).json(result); */
+  res.status(200).json(message);
 };
 
-export async function me(req: Request, res: Response): Promise<void> {
-  /* const result =  await UsersService.find(); */
+export async function verify(req: Request, res: Response): Promise<void> {
 
-  res.status(200).json('me');
+  console.log(req.params.token);
+
+  const user = req.user as User;
+
+  // logic for update column verify to true from user.uuid value
+
+  res.status(200).json('verified');
+}
+
+export async function me(req: Request, res: Response): Promise<void> {
+
+  console.log("ME");
+
+
+  const user = req.user as User;
+  const result = await UsersService.findOne(user.uuid);
+
+  res.status(200).json(result);
 };
 
 export async function update(req: Request, res: Response): Promise<void> {
