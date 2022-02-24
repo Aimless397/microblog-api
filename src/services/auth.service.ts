@@ -1,9 +1,11 @@
 import { Prisma, Token } from '@prisma/client';
 import { compareSync } from 'bcryptjs'
-import { Unauthorized } from 'http-errors'
+import { Unauthorized, NotFound } from 'http-errors'
 import { LoginDto } from '../dtos/auth/request/login.dto';
 import { TokenDto } from '../dtos/auth/response/token.dto';
-import { prisma } from '../prisma'
+import { prisma } from '../prisma';
+import { verify, sign } from 'jsonwebtoken';
+import { PrismaErrorEnum } from '../utils/enums';
 
 export class AuthService {
   static async login(input: LoginDto): Promise<TokenDto> {
@@ -22,9 +24,10 @@ export class AuthService {
       throw new Unauthorized('Invalid credentials');
     }
 
-    const token = await this.createToken(user.id);
+    const token = await this.createToken(user.uuid);
+    const tokenGenerated = this.generateAccessToken(token.jti);
 
-    return this.generateAccessToken(token.jti);
+    return tokenGenerated;
   }
 
   static async createToken(userId: string): Promise<Token> {
@@ -37,7 +40,16 @@ export class AuthService {
 
       return token;
     } catch (error) {
-      throw new Error('User not found');
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.FOREIGN_KEY_CONSTRAINT:
+            throw new NotFound('User not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
     }
   }
 
@@ -68,12 +80,12 @@ export class AuthService {
         iat,
         exp,
       },
-      process.env.JWT_SECRET_KEY as string,
+      process.env.JWT_SECRET_KEY as string
     )
 
     return {
       accessToken,
-      exp,
+      exp
     }
   }
 }
