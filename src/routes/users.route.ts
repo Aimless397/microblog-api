@@ -6,6 +6,7 @@ import {
   find,
   me,
   passwordRecovery,
+  sendEmail,
   update,
   verify
 } from '../controllers/users.controller';
@@ -26,6 +27,9 @@ export function usersRoutes(): Router {
 
   router.route('/password-recovery')
     .patch(passport.authenticate('jwt', { session: false }), asyncHandler(passwordRecovery));
+
+  router.route('/send-email')
+    .post(passport.authenticate('jwt', { session: false }), asyncHandler(sendEmail));
 
   return router;
 }
