@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { Request, Response } from 'express';
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
@@ -11,11 +12,11 @@ export async function getAll(req: Request, res: Response): Promise<void> {
 };
 
 export async function createPost(req: Request, res: Response): Promise<void> {
-
+  const { uuid } = req.user as User;
   const dto = plainToClass(CreatePostDto, req.body);
   await dto.isValid();
 
-  /* const result = await PostsService.create(dto); */
+  const result = await PostsService.create(uuid, dto);
 
   res.status(200).json('creating');
 };

@@ -10,6 +10,8 @@ import { UpdateUserDto } from '../dtos/users/request/update-user.dto';
 import { PrismaErrorEnum } from '../utils/enums';
 import { PasswordRecoveryDto } from '../dtos/users/request/password-recovery.dto';
 import { PostDto } from '../dtos/posts/response/post.dto';
+import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
+import { PostCreatedDto } from '../dtos/posts/response/post-created.dto';
 
 export class PostsService {
   static async find(): Promise<PostDto[]> {
@@ -19,29 +21,19 @@ export class PostsService {
     return plainToClass(PostDto, posts);
   };
 
-  /*  static async create({
-     password,
-     ...input
-   }: CreateUserDto): Promise<boolean> {
-     const userFound = await prisma.user.findUnique({
-       where: { email: input.email },
-       select: { id: true },
-       rejectOnNotFound: false
-     });
- 
-     if (userFound) {
-       throw new UnprocessableEntity('Email already taken');
-     }
- 
-     const user = await prisma.user.create({
-       data: {
-         ...input,
-         password: hashSync(password, 10)
-       }
-     });
- 
-     return true;
-   }; */
+  static async create(
+    uuid: string, {
+      ...input
+    }: CreatePostDto): Promise<PostCreatedDto> {
+    const post = await prisma.post.create({
+      data: {
+        uuid,
+        ...input
+      }
+    });
+
+    return post;
+  };
 
   static async findOne(uuid: string): Promise<UserDto> {
     const user = await prisma.user.findUnique({ where: { uuid } });

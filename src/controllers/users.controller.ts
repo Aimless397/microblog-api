@@ -32,7 +32,7 @@ export async function verify(req: Request, res: Response): Promise<void> {
 
   const user = req.user as User;
 
-  // logic for update column verify to true from user.uuid value
+  // TODO: logic for update column verify to true from user.uuid value
 
   res.status(200).json('verified');
 }
@@ -66,15 +66,15 @@ export async function passwordRecovery(req: Request, res: Response): Promise<voi
 export async function sendEmail(req: Request, res: Response): Promise<void> {
   const { uuid, email } = req.user as User
   const token = AuthService.generateAccessToken(uuid)
-  try{
+  try {
     await SendgridService.sendEmail({
       to: email,
       subject: "Account Verification",
       html: `<strong>Token: ${token}</strong>`,
     })
-  }catch (e){
+  } catch (e) {
     console.log(e)
   }
-  
+
   res.status(204);
 };

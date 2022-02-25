@@ -16,7 +16,8 @@ export function postsRoutes(): Router {
     .get(asyncHandler(getAll))
     .post(asyncHandler(createPost));
 
-  router.route
+  router.route('/:id')
+    .get(asyncHandler(findOne))
 
   return router;
 }

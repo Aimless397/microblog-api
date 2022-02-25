@@ -13,7 +13,11 @@ export class CreatePostDto extends BaseDto {
   @Expose()
   @IsNotEmpty()
   @IsString()
-  readonly completed: string;
+  readonly content: string;
+
+  @Expose()
+  @IsNotEmpty()
+  readonly completed: boolean;
 
   @Expose()
   @IsNotEmpty()
