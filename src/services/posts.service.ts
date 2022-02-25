@@ -27,8 +27,8 @@ export class PostsService {
     }: CreatePostDto): Promise<PostCreatedDto> {
     const post = await prisma.post.create({
       data: {
-        uuid,
-        ...input
+        ...input,
+        userId: uuid
       }
     });
 
