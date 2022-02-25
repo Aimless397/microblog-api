@@ -7,19 +7,20 @@ export class SendgridService {
 
   static async sendEmail(data: EmailType): Promise<void> {
     sgMail
-      .send({ ...data, 
-        from:{
+      .send({
+        ...data,
+        from: {
           name: "Ravn Development Team",
           email: process.env.SENDGRID_SENDER_EMAIL as string
-        }   
+        }
       })
       .then(
         (body) => {
-          console.log(body)
+          console.log(body);
         },
         (error) => {
-          console.error(error)
+          console.error(error);
         },
       )
   }
- }
+}

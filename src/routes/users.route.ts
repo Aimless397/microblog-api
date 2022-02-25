@@ -19,7 +19,7 @@ export function usersRoutes(): Router {
     .post(passport.authenticate('jwt', { session: false }), asyncHandler(create));
 
   router.route('/verify/:token')
-    .post(passport.authenticate('jwt', { session: false }), asyncHandler(verify));
+    .patch(asyncHandler(verify));
 
   router.route('/me')
     .get(passport.authenticate('jwt', { session: false }), asyncHandler(me))

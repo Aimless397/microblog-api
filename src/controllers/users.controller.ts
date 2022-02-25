@@ -7,6 +7,7 @@ import { PasswordRecoveryDto } from '../dtos/users/request/password-recovery.dto
 import { UpdateUserDto } from '../dtos/users/request/update-user.dto';
 import { UsersService } from '../services/users.service';
 import { SendgridService } from '../services/sendgrid.service'
+import jwt from 'jsonwebtoken';
 
 export async function find(req: Request, res: Response): Promise<void> {
   const result = await UsersService.find();
@@ -27,14 +28,16 @@ export async function create(req: Request, res: Response): Promise<void> {
 };
 
 export async function verify(req: Request, res: Response): Promise<void> {
+  const dto = plainToClass(UpdateUserDto, { verified: true });
+  await dto.isValid();
 
-  console.log(req.params.token);
+  const payload = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY || '');
 
-  const user = req.user as User;
+  const result = await UsersService.update(payload.sub as string, dto);
 
   // TODO: logic for update column verify to true from user.uuid value
 
-  res.status(200).json('verified');
+  res.status(200).json(result);
 }
 
 export async function me(req: Request, res: Response): Promise<void> {
@@ -64,16 +67,22 @@ export async function passwordRecovery(req: Request, res: Response): Promise<voi
 };
 
 export async function sendEmail(req: Request, res: Response): Promise<void> {
-  const { uuid, email } = req.user as User
-  const token = AuthService.generateAccessToken(uuid)
+  const { uuid } = req.user as User;
+  const { email } = await UsersService.findOne(uuid);
+
+  const token = AuthService.generateAccessToken(uuid);
+
+  console.log("TOKEN: ", token);
+
+
   try {
     await SendgridService.sendEmail({
       to: email,
       subject: "Account Verification",
-      html: `<strong>Token: ${token}</strong>`,
+      html: `<strong>Token: ${token.accessToken}</strong>`,
     })
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
 
   res.status(204);
