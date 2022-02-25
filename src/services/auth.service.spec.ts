@@ -1,14 +1,17 @@
 import { clearDatabase, prisma } from '../prisma'
 import jwt, { JsonWebTokenError } from 'jsonwebtoken'
+import { UserFactory} from '../utils/factories/user.factory'
+import { TokenFactory } from '../utils/factories/token.factory'
 import { Unauthorized, NotFound } from 'http-errors'
 import { AuthService } from './auth.service'
 import { plainToClass } from 'class-transformer'
 import { LoginDto } from '../dtos/auth/request/login.dto'
 import faker from 'faker'
 
-
-
 describe('AuthService', () => {
+  
+  let userFactory: UserFactory
+  let tokenFactory: TokenFactory
   
     beforeAll(() => {
        userFactory = new UserFactory(prisma)
@@ -33,17 +36,6 @@ describe('AuthService', () => {
         userEmail = faker.internet.email()
       })
       
-      it('should create the token for the user', async () => {
-        const data = plainToClass(LoginDto, {
-          email: userEmail,
-          password: userPassword,
-        })
-  
-        const result = await AuthService.login(data)
-  
-        expect(result).toHaveProperty('accessToken')
-      })
-  
       it('should throw an error if the user does not exist', async () => {
         const data = plainToClass(LoginDto, {
           email: faker.internet.email(),
@@ -51,7 +43,7 @@ describe('AuthService', () => {
         })
   
         await expect(AuthService.login(data)).rejects.toThrowError(
-          new Unauthorized('invalid credentials'),
+          new Unauthorized('Invalid credentials'),
         )
       })
   
@@ -68,6 +60,16 @@ describe('AuthService', () => {
         )
       })
   
+      it('should create the token for the user', async () => {
+        const data = plainToClass(LoginDto, {
+          email: userEmail,
+          password: userPassword,
+        })
+
+        const result = await AuthService.login(data)
+  
+        expect(result).toHaveProperty('accessToken')
+      })
       
     })
   
@@ -80,7 +82,7 @@ describe('AuthService', () => {
   
       it('should create the token', async () => {
         const user = await userFactory.make()
-        const result = await AuthService.createToken(user.id)
+        const result = await AuthService.createToken(user.uuid)
   
         expect(result).toHaveProperty('userId', user.id)
       })
@@ -113,7 +115,7 @@ describe('AuthService', () => {
   
         const result = await AuthService.logout(faker.lorem.word())
   
-        expect(result).toBeUndefined()
+        expect(result).toEqual("Logged out")
       })
     })
   
