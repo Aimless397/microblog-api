@@ -1,47 +1,49 @@
 import { Expose, Exclude } from 'class-transformer'
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator'
+import { IsEmail, IsEmpty, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator'
 import { BaseDto } from '../../base.dto'
 
-// body for updating user
+// update user body
 @Exclude()
 export class UpdateUserDto extends BaseDto {
   @Expose()
   @IsEmail()
+  @IsOptional()
   readonly email?: string
 
   @Expose()
   @IsString()
   @Length(5, 20)
+  @IsOptional()
   readonly password?: string
 
   @Expose()
-  @IsNotEmpty()
   @IsString()
+  @IsOptional()
   readonly firstName?: string
 
   @Expose()
-  @IsNotEmpty()
   @IsString()
+  @IsOptional()
   readonly lastName?: string
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   readonly public?: boolean
 
   @Expose()
-  @IsNotEmpty()
   @IsString()
+  @IsOptional()
   readonly role?: string
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   readonly emailPublic?: boolean
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   readonly namePublic?: boolean
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   readonly verified?: boolean
 }

@@ -5,6 +5,7 @@ import {
   create,
   find,
   me,
+  passwordRecovery,
   update,
   verify
 } from '../controllers/users.controller';
@@ -12,7 +13,6 @@ import {
 const router = express.Router();
 
 export function usersRoutes(): Router {
-
   router.route('/')
     .get(passport.authenticate('jwt', { session: false }), asyncHandler(find))
     .post(passport.authenticate('jwt', { session: false }), asyncHandler(create));
@@ -23,6 +23,9 @@ export function usersRoutes(): Router {
   router.route('/me')
     .get(passport.authenticate('jwt', { session: false }), asyncHandler(me))
     .patch(passport.authenticate('jwt', { session: false }), asyncHandler(update));
+
+  router.route('/password-recovery')
+    .patch(passport.authenticate('jwt', { session: false }), asyncHandler(passwordRecovery));
 
   return router;
 }
