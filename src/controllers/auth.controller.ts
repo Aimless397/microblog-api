@@ -18,6 +18,9 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function logout(req: Request, res: Response) {
+  const accessToken = req.headers.authorization?.replace('Bearer ', '');
 
-  res.status(200).send("logout");
+  await AuthService.logout(accessToken);
+
+  res.status(200).json('Logged out');
 }
