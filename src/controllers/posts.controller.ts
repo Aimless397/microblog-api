@@ -14,11 +14,14 @@ export async function getAll(req: Request, res: Response): Promise<void> {
 export async function createPost(req: Request, res: Response): Promise<void> {
   const { uuid } = req.user as User;
   const dto = plainToClass(CreatePostDto, req.body);
+
+  console.log("REQ.BODY: ", req.body);
+
   await dto.isValid();
 
   const result = await PostsService.create(uuid, dto);
 
-  res.status(200).json('creating');
+  res.status(200).json(result);
 };
 
 export async function findOne(req: Request, res: Response): Promise<void> {
