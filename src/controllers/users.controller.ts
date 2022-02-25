@@ -31,7 +31,7 @@ export async function verify(req: Request, res: Response): Promise<void> {
   const dto = plainToClass(UpdateUserDto, { verified: true });
   await dto.isValid();
 
-  const payload = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY || '');
+  const payload = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY || 'tokentest');
 
   const result = await UsersService.update(payload.sub as string, dto);
 
@@ -79,8 +79,9 @@ export async function sendEmail(req: Request, res: Response): Promise<void> {
     await SendgridService.sendEmail({
       to: email,
       subject: "Account Verification",
-      html: `<strong>Token: ${token.accessToken}</strong>`,
-    })
+      /* html: `<a href='http://localhost:3000/api/v1/users/verify/${token.accessToken}' style="box-sizing:border-box;border-color:#348eda;font-weight:400;text-decoration:none;display:inline-block;margin:0;color:#ffffff;background-color:#348eda;border:solid 1px #348eda;border-radius:2px;font-size:14px;padding:12px 45px" >Verify Email</a>`, */
+      html: `${token.accessToken}`,
+    });
   } catch (e) {
     console.log(e);
   }
