@@ -2,7 +2,7 @@ import { Expose, Exclude } from 'class-transformer'
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator'
 import { BaseDto } from '../../base.dto'
 
-// body for creating user
+// create user body
 @Exclude()
 export class CreateUserDto extends BaseDto {
   @Expose()

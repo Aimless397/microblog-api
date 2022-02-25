@@ -18,7 +18,7 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function logout(req: Request, res: Response) {
-  const accessToken = req.headers.authorization?.replace('Bearer', '');
+  const accessToken = req.headers.authorization?.replace('Bearer ', '');
 
   await AuthService.logout(accessToken);
 

@@ -1,9 +1,8 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
-import { BaseDto } from '../../base.dto';
 
-// get users response
+// get posts response
 @Exclude()
-export class UserDto {
+export class PostDto {
   @Expose()
   readonly uuid: string
 
