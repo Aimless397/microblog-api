@@ -1,4 +1,4 @@
-import { User } from '@prisma/client'
+import { User, Post } from '@prisma/client'
 import faker from 'faker'
 import jwt from 'jsonwebtoken'
 import 'jest-extended/all'
@@ -10,6 +10,7 @@ import { UserFactory } from '../utils/factories/user.factory'
 import { UpdateUserDto } from '../dtos/users/request/update-user.dto'
 import { UsersService } from './users.service'
 import { AuthService } from './auth.service'
+import { PostsService } from './posts.service'
 import { SendgridService } from './sendgrid.service'
 import { TokenFactory } from '../utils/factories/token.factory'
 

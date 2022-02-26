@@ -53,16 +53,18 @@ export class AuthService {
     }
   }
 
-  static async logout(accessToken?: string): Promise<void> {
-    if (!accessToken) return
+  static async logout(accessToken?: string): Promise<boolean> {
+    if (!accessToken) return false
 
     try {
       const { sub } = verify(accessToken, process.env.JWT_SECRET_KEY as string)
 
       await prisma.token.delete({ where: { jti: sub as string } })
+      return true
     } catch (error) {
-      throw error;
+      console.error(error)
     }
+    return false
   }
 
   static generateAccessToken(sub: string): TokenDto {

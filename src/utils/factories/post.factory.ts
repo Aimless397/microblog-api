@@ -12,11 +12,8 @@ export class PostFactory extends AbstractFactory<Post> {
       return this.prismaClient.post.create({
         data: {
           ...input,
-          userId: input.uuid,
           content: input.content ?? faker.datatype.string(20),
           completed: input.completed ?? true,
-          likes: input.likes ?? 0,
-          dislikes: input.likes ?? 0
         },
       })
     }

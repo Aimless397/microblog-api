@@ -44,13 +44,8 @@ export class UsersService {
 
     const token = await AuthService.createToken(user.uuid);
     const accessToken = AuthService.generateAccessToken(token.jti);
-
-    try {
-      await SendgridService.sendEmail(user.email, accessToken)
-    } catch (error) {
-      console.log(error);
-    }
-
+    await SendgridService.sendEmail(user.email, accessToken)
+   
     return true;
   };
 
@@ -100,27 +95,27 @@ export class UsersService {
     }
   };
 
-  static async passwordRecovery(
-    uuid: string,
-    { email, password, passwordRepeated }: PasswordRecoveryDto
-  ): Promise<void> {
-    try {
+  // static async passwordRecovery(
+  //   uuid: string,
+  //   { email, password, passwordRepeated }: PasswordRecoveryDto
+  // ): Promise<void> {
+  //   try {
 
-      // TODO: Password change logic
+  //     // TODO: Password change logic
 
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('User not found')
-          case PrismaErrorEnum.DUPLICATED:
-            throw new UnprocessableEntity('email already taken')
-          default:
-            throw error;
-        }
-      }
+  //   } catch (error) {
+  //     if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  //       switch (error.code) {
+  //         case PrismaErrorEnum.NOT_FOUND:
+  //           throw new NotFound('User not found')
+  //         case PrismaErrorEnum.DUPLICATED:
+  //           throw new UnprocessableEntity('email already taken')
+  //         default:
+  //           throw error;
+  //       }
+  //     }
 
-      throw error;
-    }
-  };
+  //     throw error;
+  //   }
+  // };
 }
