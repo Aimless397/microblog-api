@@ -1,21 +1,14 @@
 import { PostReaction, Prisma } from '@prisma/client';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { UserDto } from '../dtos/users/response/user.dto';
 import { prisma } from '../prisma';
 import { UnprocessableEntity, NotFound } from 'http-errors';
-import { hashSync } from 'bcryptjs';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from '../dtos/users/request/create-user.dto';
-import { UpdateUserDto } from '../dtos/users/request/update-user.dto';
 import { PrismaErrorEnum } from '../utils/enums';
-import { PasswordRecoveryDto } from '../dtos/users/request/password-recovery.dto';
 import { PostDto } from '../dtos/posts/response/post.dto';
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
 import { PostCreatedDto } from '../dtos/posts/response/post-created.dto';
 import { UpdatePostDto } from '../dtos/posts/request/update-post.dto';
 import { CreatePostReactionDto } from '../dtos/postReactions/request/create-post-reaction.dto';
 import { PostReactionCreatedDto } from '../dtos/postReactions/response/post-reaction-created.dto';
-import { PostReactionDto } from '../dtos/postReactions/response/post-reaction.dto';
 
 export class PostsService {
   static async find(): Promise<PostDto[]> {

@@ -13,7 +13,7 @@ export class UserFactory extends AbstractFactory<User> {
     return this.prismaClient.user.create({
       data: {
         ...input,
-        verified:false,
+        verified: input.verified?? false,
         firstName: input.firstName ?? faker.name.firstName(),
         email: input.email ?? faker.internet.email(),
         lastName: input.lastName ?? faker.name.lastName(),
