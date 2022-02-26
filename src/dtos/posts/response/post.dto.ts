@@ -1,38 +1,29 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
 
-// get posts response
+// get posts/post response
 @Exclude()
 export class PostDto {
   @Expose()
-  readonly uuid: string
+  readonly uuid: string;
 
   @Expose()
-  readonly email: string
+  readonly userId: string;
 
   @Expose()
-  readonly firstName: string
+  readonly content: string;
 
   @Expose()
-  readonly lastName: string
+  readonly completed: boolean;
 
   @Expose()
-  readonly public: boolean
+  readonly likes: number;
 
   @Expose()
-  readonly role: string
+  readonly dislikes: number;
 
   @Expose()
-  readonly emailPublic: boolean
+  readonly createdAt: Date;
 
   @Expose()
-  readonly namePublic: boolean
-
-  @Expose()
-  readonly verified: boolean
-
-  @Expose()
-  readonly createdAt: Date
-
-  @Expose()
-  readonly updatedAt: Date
+  readonly updatedAt: Date;
 }
