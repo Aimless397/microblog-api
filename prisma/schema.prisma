@@ -1,0 +1,107 @@
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                Int           @id @default(autoincrement())
+  uuid              String        @unique @default(uuid())
+  email             String        @unique
+  password          String
+  firstName         String        @map("first_name")
+  lastName          String        @map("last_name")
+  public            Boolean       @default(false)
+  role              String        @default("user")
+  emailPublic       Boolean       @default(false) @map("email_public")
+  namePublic        Boolean       @default(false) @map("name_public")
+  verified          Boolean
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  tokens            Token[]
+  posts             Post[]
+  comments          Comment[]
+  postReactions     PostReaction[]
+  commentReactions  CommentReaction[]
+
+  @@map("users")
+}
+
+model Token {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid())
+  userId        String    @map("user_id")
+  user          User      @relation(fields: [userId], references: [uuid])
+  jti           String    @unique @default(uuid())
+  aud           String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("tokens")
+}
+
+model Post {
+  id            Int       @id @default(autoincrement())
+  uuid          String    @unique @default(uuid())
+  userId        String    @map("user_id")
+  user          User      @relation(fields: [userId], references: [uuid])
+  content       String
+  completed     Boolean
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  comments      Comment[]
+  postReactions PostReaction[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id                Int       @id @default(autoincrement())
+  uuid              String    @unique @default(uuid())
+  userId            String    @map("user_id")
+  user              User      @relation(fields: [userId], references: [uuid])
+  postId            String    @map("post_id")
+  post              Post      @relation(fields: [postId], references: [uuid])
+  content           String
+  completed         Boolean
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  commentReactions  CommentReaction[]
+
+  @@map("comments")
+}
+
+model PostReaction {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique @default(uuid())
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [uuid])
+  postId      String    @map("post_id")
+  post        Post      @relation(fields: [postId], references: [uuid])
+  status      String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("post_reactions")
+}
+
+model CommentReaction {
+  id          Int         @id @default(autoincrement())
+  uuid        String      @unique @default(uuid())
+  userId      String      @map("user_id")
+  user        User        @relation(fields: [userId], references: [uuid])
+  commentId   String      @map("comment_id")
+  comment     Comment     @relation(fields: [commentId], references: [uuid])
+  status      String
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("comment_reactions")
+}
