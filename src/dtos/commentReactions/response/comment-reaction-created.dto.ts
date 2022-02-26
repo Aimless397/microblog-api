@@ -1,8 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
 
-// get comment response
+// comment1Reaction created response
 @Exclude()
-export class CommentDto {
+export class CommentReactionCreatedDto {
   @Expose()
   readonly uuid: string;
 
@@ -10,13 +10,10 @@ export class CommentDto {
   readonly userId: string;
 
   @Expose()
-  readonly postId: string;
+  readonly commentId: string;
 
   @Expose()
-  readonly content: string;
-
-  @Expose()
-  readonly completed: boolean;
+  readonly status: string;
 
   @Expose()
   readonly createdAt: Date;

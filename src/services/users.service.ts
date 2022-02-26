@@ -42,18 +42,15 @@ export class UsersService {
       }
     });
 
-
     const token = await AuthService.createToken(user.uuid);
     const accessToken = AuthService.generateAccessToken(token.jti);
 
-    try{
-
-      await SendgridService.sendEmail(user.email,accessToken)
-      
-    }catch(error){
-      console.log(error)
+    try {
+      await SendgridService.sendEmail(user.email, accessToken)
+    } catch (error) {
+      console.log(error);
     }
-    
+
     return true;
   };
 
@@ -62,6 +59,14 @@ export class UsersService {
 
     return plainToClass(UserDto, user);
   };
+
+  static async getUuidFromToken(
+    jti: string
+  ): Promise<string> {
+    const token = await prisma.token.findUnique({ where: { jti } });
+
+    return token.userId;
+  }
 
   static async update(
     uuid: string,

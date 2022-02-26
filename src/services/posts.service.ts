@@ -49,7 +49,7 @@ export class PostsService {
     const post = await prisma.post.findMany({ where: { uuid: postId, userId: uuid } });
 
     return plainToInstance(PostDto, post);
-  }
+  };
 
   static async update(
     postId: string,

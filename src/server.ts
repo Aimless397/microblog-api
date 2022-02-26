@@ -14,6 +14,9 @@ const PORT = process.env.PORT || 3000;
 const ENVIROMENT = process.env.NODE_ENV || 'development'
 const swaggerDocument = YAML.load('api.yaml');
 
+
+app.set('views', 'src/views');
+app.set('view engine', 'ejs');
 app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

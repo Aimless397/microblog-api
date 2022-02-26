@@ -5,31 +5,20 @@ import { BaseDto } from "../../base.dto";
 
 //create comment body
 @Exclude()
-export class CreateCommentDto extends BaseDto{
+export class CreateCommentDto extends BaseDto {
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
+    readonly postId: string;
 
     @Expose()
     @IsNotEmpty()
     @IsString()
-    readonly postId:string;
+    readonly content: string;
 
     @Expose()
     @IsNotEmpty()
-    @IsString()
-    readonly content:string;
-
-    @Expose()
-    @IsNotEmpty()
-    readonly completed:boolean;
-
-    @Expose()
-    @IsNotEmpty()
-    @IsInt()
-    readonly likes:number;
-
-    @Expose()
-    @IsNotEmpty()
-    @IsInt()
-    readonly dislikes:number;
+    readonly completed: boolean;
 }
 
 

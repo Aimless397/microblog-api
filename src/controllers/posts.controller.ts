@@ -6,6 +6,7 @@ import { PostReactionDto } from '../dtos/postReactions/response/post-reaction.dt
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
 import { UpdatePostDto } from '../dtos/posts/request/update-post.dto';
 import { PostsService } from '../services/posts.service';
+import { UsersService } from '../services/users.service';
 
 
 export async function find(req: Request, res: Response): Promise<void> {
@@ -51,14 +52,15 @@ export async function remove(req: Request, res: Response): Promise<void> {
   const { uuid } = req.user as User;
 
   const validUser = await PostsService.findByUserId(uuid, req.params.id);
+  const user = await UsersService.findOne(uuid);
 
-  if (!validUser.length) {
+  if (!validUser.length && user.role !== "moderator") {
     res.status(403).json({ message: `Post doesn't belong to user` });
+  } else {
+    await PostsService.remove(req.params.id);
+
+    res.status(200).json({ message: 'Post deleted successfully' });
   }
-
-  await PostsService.remove(req.params.id);
-
-  res.status(200).json({ message: 'Post deleted successfully' });
 };
 
 export async function reaction(req: Request, res: Response): Promise<void> {

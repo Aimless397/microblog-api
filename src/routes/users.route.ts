@@ -18,7 +18,7 @@ export function usersRoutes(): Router {
     .post(asyncHandler(create));
 
   router.route('/verify/:token')
-    .patch(asyncHandler(verify));
+    .get(asyncHandler(verify));
 
   router.route('/me')
     .get(passport.authenticate('jwt', { session: false }), asyncHandler(me))
@@ -26,6 +26,6 @@ export function usersRoutes(): Router {
 
   router.route('/password-recovery')
     .patch(passport.authenticate('jwt', { session: false }), asyncHandler(passwordRecovery));
-  
+
   return router;
 }
