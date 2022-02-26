@@ -8,42 +8,42 @@ export class UpdateUserDto extends BaseDto {
   @Expose()
   @IsEmail()
   @IsOptional()
-  readonly email?: string
+  readonly email?: string;
 
   @Expose()
   @IsString()
   @Length(5, 20)
   @IsOptional()
-  readonly password?: string
+  readonly password?: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  readonly firstName?: string
+  readonly firstName?: string;
 
   @Expose()
   @IsString()
   @IsOptional()
-  readonly lastName?: string
+  readonly lastName?: string;
 
   @Expose()
   @IsOptional()
-  readonly public?: boolean
+  readonly public?: boolean;
 
   @Expose()
   @IsString()
   @IsOptional()
-  readonly role?: string
+  readonly role?: string;
 
   @Expose()
   @IsOptional()
-  readonly emailPublic?: boolean
+  readonly emailPublic?: boolean;
 
   @Expose()
   @IsOptional()
-  readonly namePublic?: boolean
+  readonly namePublic?: boolean;
 
   @Expose()
   @IsOptional()
-  readonly verified?: boolean
+  readonly verified?: boolean;
 }

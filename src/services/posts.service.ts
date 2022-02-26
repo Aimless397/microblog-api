@@ -12,6 +12,7 @@ import { PasswordRecoveryDto } from '../dtos/users/request/password-recovery.dto
 import { PostDto } from '../dtos/posts/response/post.dto';
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
 import { PostCreatedDto } from '../dtos/posts/response/post-created.dto';
+import { UpdatePostDto } from '../dtos/posts/request/update-post.dto';
 
 export class PostsService {
   static async find(): Promise<PostDto[]> {
@@ -35,35 +36,38 @@ export class PostsService {
     return post;
   };
 
-  static async findOne(uuid: string): Promise<UserDto> {
-    const user = await prisma.user.findUnique({ where: { uuid } });
+  static async findOne(uuid: string): Promise<PostDto> {
+    const post = await prisma.post.findUnique({ where: { uuid } });
 
-    return plainToClass(UserDto, user);
+    return plainToClass(PostDto, post);
   };
+
+  static async findByUserId(uuid: string, postId: string): Promise<PostDto[]> {
+    const post = await prisma.post.findMany({ where: { uuid: postId, userId: uuid } });
+
+    return plainToInstance(PostDto, post);
+  }
 
   static async update(
-    uuid: string,
-    { password, ...input }: UpdateUserDto,
-  ): Promise<UserDto> {
+    postId: string,
+    { ...input }: UpdatePostDto,
+  ): Promise<PostDto> {
     try {
-      const user = await prisma.user.update({
+      const post = await prisma.post.update({
         data: {
           ...input,
-          ...(password && { password: hashSync(password, 10) })
         },
         where: {
-          uuid
+          uuid: postId
         }
-      })
+      });
 
-      return plainToClass(UserDto, user)
+      return plainToClass(PostDto, post);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('User not found')
-          case PrismaErrorEnum.DUPLICATED:
-            throw new UnprocessableEntity('email already taken')
+            throw new NotFound('Post not found');
           default:
             throw error;
         }
@@ -73,27 +77,39 @@ export class PostsService {
     }
   };
 
-  static async passwordRecovery(
-    uuid: string,
-    { email, password, passwordRepeated }: PasswordRecoveryDto
-  ): Promise<void> {
+  static async remove(
+    postId: string,
+  ): Promise<PostDto> {
+    try {
+      const post = await prisma.post.delete({
+        where: {
+          uuid: postId
+        }
+      });
+
+      return post;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFound('Post not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  };
+
+  /* static async reaction(
+
+  ): Promise<boolean> {
     try {
 
-      // TODO: Password change logic
-
+      return true;
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('User not found')
-          case PrismaErrorEnum.DUPLICATED:
-            throw new UnprocessableEntity('email already taken')
-          default:
-            throw error;
-        }
-      }
 
-      throw error;
     }
-  };
+  }; */
 }
