@@ -52,8 +52,6 @@ model Post {
   user          User      @relation(fields: [userId], references: [uuid])
   content       String
   completed     Boolean
-  likes         Int
-  dislikes      Int
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -72,8 +70,6 @@ model Comment {
   post              Post      @relation(fields: [postId], references: [uuid])
   content           String
   completed         Boolean
-  likes             Int
-  dislikes          Int
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
 

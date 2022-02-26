@@ -1,6 +1,8 @@
 import { User } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { Request, Response } from 'express';
+import { CreatePostReactionDto } from '../dtos/postReactions/request/create-post-reaction.dto';
+import { PostReactionDto } from '../dtos/postReactions/response/post-reaction.dto';
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
 import { UpdatePostDto } from '../dtos/posts/request/update-post.dto';
 import { PostsService } from '../services/posts.service';
@@ -60,6 +62,33 @@ export async function remove(req: Request, res: Response): Promise<void> {
 };
 
 export async function reaction(req: Request, res: Response): Promise<void> {
+  const { id, reaction } = req.params;
+  const { uuid } = req.user as User;
+  const dto = plainToClass(CreatePostReactionDto, { userId: uuid, postId: id, status: reaction });
+  const validReactions = ['L', 'D', 'N'];
 
-  res.status(200).json();
+  if (validReactions.includes(reaction)) {
+    const reactionExists = await PostsService.findPostReaction(id, uuid);
+
+    let result: PostReactionDto = {};
+
+    if (reactionExists.length) {
+
+      console.log(reactionExists[0].uuid, reaction);
+
+      console.log("updating");
+
+      result = await PostsService.updateReaction(reactionExists[0].uuid, reaction);
+
+      console.log("result: ", result);
+
+    } else {
+      console.log("creating");
+      result = await PostsService.createReaction(uuid, dto);
+    }
+
+    res.status(200).json(result);
+  } else {
+    res.status(400).json({ message: 'Invalid reaction' });
+  }
 }

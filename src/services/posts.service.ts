@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { PostReaction, Prisma } from '@prisma/client';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { UserDto } from '../dtos/users/response/user.dto';
 import { prisma } from '../prisma';
@@ -13,13 +13,16 @@ import { PostDto } from '../dtos/posts/response/post.dto';
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto';
 import { PostCreatedDto } from '../dtos/posts/response/post-created.dto';
 import { UpdatePostDto } from '../dtos/posts/request/update-post.dto';
+import { CreatePostReactionDto } from '../dtos/postReactions/request/create-post-reaction.dto';
+import { PostReactionCreatedDto } from '../dtos/postReactions/response/post-reaction-created.dto';
+import { PostReactionDto } from '../dtos/postReactions/response/post-reaction.dto';
 
 export class PostsService {
   static async find(): Promise<PostDto[]> {
     const posts = await prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
 
     // plainToClass
-    return plainToClass(PostDto, posts);
+    return plainToInstance(PostDto, posts);
   };
 
   static async create(
@@ -102,14 +105,76 @@ export class PostsService {
     }
   };
 
-  /* static async reaction(
-
-  ): Promise<boolean> {
+  static async findPostReaction(
+    postId: string,
+    userId: string
+  ): Promise<PostReaction[]> {
     try {
+      const postReactionFound = await prisma.postReaction.findMany({
+        where: {
+          postId,
+          userId
+        }
+      });
 
-      return true;
+      return postReactionFound;
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFound('Post not found');
+          default:
+            throw error;
+        }
+      }
 
+      throw error;
     }
-  }; */
+  };
+
+  static async createReaction(
+    userId: string,
+    { ...input }: CreatePostReactionDto
+  ): Promise<PostReactionCreatedDto> {
+    const postReaction = await prisma.postReaction.create({
+      data: {
+        ...input,
+        userId: userId
+      }
+    });
+
+    return postReaction;
+  };
+
+  static async updateReaction(
+    uuid: string,
+    status: string
+  ): Promise<PostReactionCreatedDto> {
+    try {
+      const postReactionUpdated = await prisma.postReaction.update({
+        data: {
+          status
+        },
+        where: {
+          uuid
+        }
+      });
+
+      console.log("updated: ", postReactionUpdated);
+
+
+      return postReactionUpdated;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        switch (error.code) {
+          case PrismaErrorEnum.NOT_FOUND:
+            throw new NotFound('Post not found');
+          default:
+            throw error;
+        }
+      }
+
+      throw error;
+    }
+  };
 }

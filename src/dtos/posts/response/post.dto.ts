@@ -15,11 +15,11 @@ export class PostDto {
   @Expose()
   readonly completed: boolean;
 
-  @Expose()
-  readonly likes: number;
-
-  @Expose()
-  readonly dislikes: number;
+  /*   @Expose()
+    readonly likes: number;
+  
+    @Expose()
+    readonly dislikes: number; */
 
   @Expose()
   readonly createdAt: Date;

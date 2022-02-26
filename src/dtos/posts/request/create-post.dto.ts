@@ -13,14 +13,14 @@ export class CreatePostDto extends BaseDto {
   @Expose()
   @IsNotEmpty()
   readonly completed: boolean;
-
-  @Expose()
-  @IsNotEmpty()
-  @IsInt()
-  readonly likes: number;
-
-  @Expose()
-  @IsNotEmpty()
-  @IsInt()
-  readonly dislikes: number;
+  /* 
+    @Expose()
+    @IsNotEmpty()
+    @IsInt()
+    readonly likes: number;
+  
+    @Expose()
+    @IsNotEmpty()
+    @IsInt()
+    readonly dislikes: number; */
 }

@@ -1,8 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
 
-// post created response
+// postReaction created response
 @Exclude()
-export class PostCreatedDto {
+export class PostReactionCreatedDto {
   @Expose()
   readonly uuid: string;
 
@@ -10,16 +10,10 @@ export class PostCreatedDto {
   readonly userId: string;
 
   @Expose()
-  readonly content: string;
+  readonly postId: string;
 
   @Expose()
-  readonly completed: boolean;
-
-  /*   @Expose()
-    readonly likes: number;
-  
-    @Expose()
-    readonly dislikes: number; */
+  readonly status: string;
 
   @Expose()
   readonly createdAt: Date;
