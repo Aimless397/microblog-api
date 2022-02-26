@@ -142,49 +142,4 @@ describe('UserService', () => {
       
     })
   })
-
-  // describe('confirmAccount', () => {
-  //   const token = '123.123.123'
-
-  //   it('should throw an error if the token is invalid', async () => {
-  //     await expect(
-  //       UsersService.confirmAccount(faker.lorem.word()),
-  //     ).rejects.toThrowError(new UnprocessableEntity('Invalid Token'))
-  //   })
-
-  //   it('should throw an error if the token does not belong to an existing user', async () => {
-  //     jest
-  //       .spyOn(jwt, 'verify')
-  //       .mockImplementation(jest.fn(() => ({ sub: faker.datatype.uuid() })))
-
-  //     await expect(UsersService.confirmAccount(token)).rejects.toThrowError(
-  //       new UnprocessableEntity('Invalid Token'),
-  //     )
-  //   })
-
-  //   it('should throw an error if the user was already confirmed before', async () => {
-  //     const userConfirmed = await userFactory.make({
-  //       confirmedAt: faker.datatype.datetime(),
-  //     })
-
-  //     jest
-  //       .spyOn(jwt, 'verify')
-  //       .mockImplementation(jest.fn(() => ({ sub: userConfirmed.uuid })))
-
-  //     await expect(UsersService.confirmAccount(token)).rejects.toThrowError(
-  //       new UnprocessableEntity('Account already confirmed'),
-  //     )
-  //   })
-
-  //   it('should confirm the user account', async () => {
-  //     const user = await userFactory.make()
-  //     jest
-  //       .spyOn(jwt, 'verify')
-  //       .mockImplementation(jest.fn(() => ({ sub: user.uuid })))
-
-  //     const result = await UsersService.confirmAccount(token)
-
-  //     expect(result).toBeUndefined()
-  //   })
-  // })
 })
