@@ -11,8 +11,11 @@ import { CreatePostReactionDto } from '../dtos/postReactions/request/create-post
 import { PostReactionCreatedDto } from '../dtos/postReactions/response/post-reaction-created.dto';
 
 export class PostsService {
-  static async find(): Promise<PostDto[]> {
-    const posts = await prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
+  static async find(
+    offset: number,
+    limit: number
+  ): Promise<PostDto[]> {
+    const posts = await prisma.post.findMany({ skip: offset, take: limit, orderBy: { createdAt: 'desc' } });
 
     // plainToClass
     return plainToInstance(PostDto, posts);

@@ -12,8 +12,11 @@ import { CreateCommentReactionDto } from "../dtos/commentReactions/request/creat
 import { CommentReactionCreatedDto } from "../dtos/commentReactions/response/comment-reaction-created.dto";
 
 export class CommentsService {
-  static async find(): Promise<CommentDto[]> {
-    const comments = await prisma.comment.findMany({ orderBy: { createdAt: 'desc' } });
+  static async find(
+    offset: number,
+    limit: number
+  ): Promise<CommentDto[]> {
+    const comments = await prisma.comment.findMany({ skip: offset, take: limit, orderBy: { createdAt: 'desc' } });
 
     return plainToInstance(CommentDto, comments);
   };

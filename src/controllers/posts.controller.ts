@@ -10,7 +10,12 @@ import { UsersService } from '../services/users.service';
 
 
 export async function find(req: Request, res: Response): Promise<void> {
-  const result = await PostsService.find();
+
+  const { page, limit } = req.query;
+
+  let limitNumber = parseInt(limit as string);
+  const offset = parseInt(page as string) * limitNumber;
+  const result = await PostsService.find(offset, limitNumber);
 
   res.status(200).json(result);
 };
