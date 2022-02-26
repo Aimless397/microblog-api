@@ -6,6 +6,12 @@ import { BaseDto } from "../../base.dto";
 //create comment body
 @Exclude()
 export class CreateCommentDto extends BaseDto{
+
+    @Expose()
+    @IsNotEmpty()
+    @IsString()
+    readonly postId:string;
+
     @Expose()
     @IsNotEmpty()
     @IsString()
@@ -13,15 +19,17 @@ export class CreateCommentDto extends BaseDto{
 
     @Expose()
     @IsNotEmpty()
-    readonly completed:string;
+    readonly completed:boolean;
 
     @Expose()
     @IsNotEmpty()
     @IsInt()
-    readonly likes:string;
+    readonly likes:number;
 
     @Expose()
     @IsNotEmpty()
     @IsInt()
-    readonly dislikes:string;
+    readonly dislikes:number;
 }
+
+

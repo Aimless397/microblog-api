@@ -6,9 +6,6 @@ import { BaseDto } from "../../base.dto";
 //create comment body
 @Exclude()
 export class UpdateCommentDto extends BaseDto{
-    @Expose()
-    @IsOptional()
-    readonly userId?: string;
 
     @Expose()
     @IsString()
