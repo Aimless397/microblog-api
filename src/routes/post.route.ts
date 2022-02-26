@@ -23,7 +23,7 @@ export function postsRoutes(): Router {
     .patch(passport.authenticate('jwt', { session: false }), asyncHandler(update))
     .delete(passport.authenticate('jwt', { session: false }), asyncHandler(remove));
 
-  router.route('/:id/reaction/:reaction')
+  router.route('/:id/:reaction')
     .patch(passport.authenticate('jwt', { session: false }), asyncHandler(reaction));
 
   return router;
