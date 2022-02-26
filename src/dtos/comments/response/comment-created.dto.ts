@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 
-// create comment response
+// created comment response
 @Exclude()
 export class CommentCreatedDto {
   @Expose()
@@ -14,12 +14,6 @@ export class CommentCreatedDto {
 
   @Expose()
   readonly completed: boolean;
-
-  @Expose()
-  readonly likes: number;
-
-  @Expose()
-  readonly dislikes: number;
 
   @Expose()
   readonly createdAt: Date;

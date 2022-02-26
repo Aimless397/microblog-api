@@ -18,14 +18,4 @@ export class UpdatePostDto extends BaseDto {
   @IsBoolean()
   @IsOptional()
   readonly completed?: boolean;
-  /* 
-    @Expose()
-    @IsNumber()
-    @IsOptional()
-    readonly likes?: number;
-  
-    @Expose()
-    @IsNumber()
-    @IsOptional()
-    readonly dislikes?: number; */
 }

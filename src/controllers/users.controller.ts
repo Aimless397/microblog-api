@@ -22,7 +22,7 @@ export async function create(req: Request, res: Response): Promise<void> {
   const message = 'Please verify the user email';
 
   /* res.status(200).json(result); */
-  res.status(200).json(message);
+  res.status(200).json({ message });
 };
 
 export async function verify(req: Request, res: Response): Promise<void> {
@@ -31,11 +31,15 @@ export async function verify(req: Request, res: Response): Promise<void> {
 
   const payload = jwt.verify(req.params.token, process.env.JWT_SECRET_KEY || 'tokentest');
 
-  const result = await UsersService.update(payload.sub as string, dto);
+  console.log("PAYLOAD: ", payload);
+
+  const userId = await UsersService.getUuidFromToken(payload.sub as string);
+
+  const result = await UsersService.update(userId, dto);
 
   // TODO: logic for update column verify to true from user.uuid value
 
-  res.status(200).json(result);
+  res.status(200).render('verifyEmailScreen');
 }
 
 export async function me(req: Request, res: Response): Promise<void> {

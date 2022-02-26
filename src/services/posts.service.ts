@@ -18,8 +18,11 @@ import { PostReactionCreatedDto } from '../dtos/postReactions/response/post-reac
 import { PostReactionDto } from '../dtos/postReactions/response/post-reaction.dto';
 
 export class PostsService {
-  static async find(): Promise<PostDto[]> {
-    const posts = await prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
+  static async find(
+    offset: number,
+    limit: number
+  ): Promise<PostDto[]> {
+    const posts = await prisma.post.findMany({ skip: offset, take: limit, orderBy: { createdAt: 'desc' } });
 
     // plainToClass
     return plainToInstance(PostDto, posts);
@@ -49,7 +52,7 @@ export class PostsService {
     const post = await prisma.post.findMany({ where: { uuid: postId, userId: uuid } });
 
     return plainToInstance(PostDto, post);
-  }
+  };
 
   static async update(
     postId: string,
