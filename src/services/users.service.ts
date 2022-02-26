@@ -32,7 +32,7 @@ export class UsersService {
     });
 
     if (userFound) {
-      throw new UnprocessableEntity('Email already taken');
+      throw new UnprocessableEntity('email already taken');
     }
 
     const user = await prisma.user.create({

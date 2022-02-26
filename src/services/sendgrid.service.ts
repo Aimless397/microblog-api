@@ -16,13 +16,5 @@ export class SendgridService {
           email: process.env.SENDGRID_SENDER_EMAIL as string
         }
       })
-      .then(
-        (body) => {
-          console.log(body);
-        },
-        (error) => {
-          console.error(error);
-        },
-      )
   }
 }
