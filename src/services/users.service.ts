@@ -6,6 +6,7 @@ import { prisma } from '../prisma';
 import { UnprocessableEntity, NotFound } from 'http-errors';
 import { hashSync } from 'bcryptjs';
 import { AuthService } from './auth.service';
+import { SendgridService } from '../services/sendgrid.service'
 import { CreateUserDto } from '../dtos/users/request/create-user.dto';
 import { UpdateUserDto } from '../dtos/users/request/update-user.dto';
 import { PrismaErrorEnum } from '../utils/enums';
@@ -31,7 +32,7 @@ export class UsersService {
     });
 
     if (userFound) {
-      throw new UnprocessableEntity('Email already taken');
+      throw new UnprocessableEntity('email already taken');
     }
 
     const user = await prisma.user.create({
@@ -43,12 +44,16 @@ export class UsersService {
 
 
     const token = await AuthService.createToken(user.uuid);
-    const tokenCreated = AuthService.generateAccessToken(token.jti);
-    // send email with tokenCreated
-    // http://localhost:3000/api/v1/users/verify/:token
-    // TODO: Complete the send email logic
+    const accessToken = AuthService.generateAccessToken(token.jti);
 
+    try{
 
+      await SendgridService.sendEmail(user.email,accessToken)
+      
+    }catch(error){
+      console.log(error)
+    }
+    
     return true;
   };
 
