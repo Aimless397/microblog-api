@@ -36,12 +36,12 @@ describe('UserService', () => {
   })
 
   describe('find', () => {
-    beforeEach(async ()=>{
+    beforeEach(async () => {
       await clearDatabase()
     })
-    
+
     it('should return a list of users', async () => {
-      
+
       users = await userFactory.makeMany(5)
 
       const result = await UsersService.find()
@@ -108,9 +108,9 @@ describe('UserService', () => {
     })
   })
 
-  describe('getUuidFromToken', ()=>{
-     
-    it('should return a user uuid from token',async ()=>{
+  describe('getUuidFromToken', () => {
+
+    it('should return a user uuid from token', async () => {
       const user = await userFactory.make({})
 
       const token = await AuthService.createToken(user.uuid)
@@ -159,7 +159,7 @@ describe('UserService', () => {
       const result = await UsersService.update(user.uuid, dto)
 
       expect(result).toHaveProperty('email', newEmail)
-      
+
     })
   })
 })

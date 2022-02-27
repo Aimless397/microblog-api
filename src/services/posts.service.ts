@@ -12,9 +12,10 @@ import { PostReactionCreatedDto } from '../dtos/postReactions/response/post-reac
 
 export class PostsService {
   static async find(
-    offset: number,
-    limit: number
+    offset: number = 0,
+    limit: number = 10
   ): Promise<PostDto[]> {
+
     const posts = await prisma.post.findMany({ skip: offset, take: limit, orderBy: { createdAt: 'desc' } });
 
     // plainToClass
