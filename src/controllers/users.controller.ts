@@ -59,11 +59,11 @@ export async function update(req: Request, res: Response): Promise<void> {
   res.status(200).json(result);
 };
 
-export async function passwordRecovery(req: Request, res: Response): Promise<void> {
+/* export async function passwordRecovery(req: Request, res: Response): Promise<void> {
   const { uuid } = req.user as User;
   const dto = plainToClass(PasswordRecoveryDto, req.body);
   await dto.isValid();
   const result = await UsersService.passwordRecovery(uuid, dto);
 
   res.status(200).json('update');
-};
+}; */
