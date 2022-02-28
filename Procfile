@@ -1,0 +1,1 @@
+bot: ts-node-dev --respawn --transpile-only --exit-child --watch src src/server.ts
