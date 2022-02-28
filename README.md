@@ -106,5 +106,19 @@ _Below is an example of how you can instruct your audience on installing and set
    npm install @prisma/cli --save-dev
    npx prisma migrate dev
    ```
+7. To run tests, use the following
+  
+  ```
+  npm run test
+  ```
+  Run tests collecting coverage:
+  ```
+  npm run test:coverage
+  ```
  <p align="right">(<a href="#top">back to top</a>)</p>
+ 
 <!-- USAGE EXAMPLES -->
+## Usage
+
+_For examples of the endpoints, please check the [Documentation](https://documenter.getpostman.com/view/13158230/UVkqtFT1)_
+<p align="right">(<a href="#top">back to top</a>)</p>
