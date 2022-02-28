@@ -71,7 +71,6 @@ export class UsersService {
       const user = await prisma.user.update({
         data: {
           ...input,
-          ...(password && { password: hashSync(password, 10) })
         },
         where: {
           uuid
@@ -80,18 +79,20 @@ export class UsersService {
 
       return plainToClass(UserDto, user)
     } catch (error) {
+      let throwable = error
+      
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('User not found')
+            throwable = new NotFound('User not found');
+            break;
           case PrismaErrorEnum.DUPLICATED:
-            throw new UnprocessableEntity('email already taken')
-          default:
-            throw error;
+          throwable = new UnprocessableEntity('email already taken');
+          break;
         }
       }
 
-      throw error;
+      throw throwable;
     }
   };
 

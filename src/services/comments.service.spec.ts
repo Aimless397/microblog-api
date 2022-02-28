@@ -1,18 +1,17 @@
-import { User, Post } from '@prisma/client'
+import { User, Post, Comment } from '@prisma/client'
 import faker from 'faker'
 import 'jest-extended/all'
 import { plainToInstance } from 'class-transformer'
 import { NotFound } from 'http-errors'
 import { CreateUserDto } from '../dtos/users/request/create-user.dto'
 import { clearDatabase, prisma } from '../prisma'
-import { PostsService } from './posts.service'
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto'
 import { hashSync } from 'bcryptjs'
-import { PostCreatedDto } from '../dtos/posts/response/post-created.dto'
-import { UpdatePostDto } from '../dtos/posts/request/update-post.dto'
 import { CreateCommentDto } from '../dtos/comments/request/create-comment.dto'
 import { CommentsService } from './comments.service'
 import { CommentCreatedDto } from '../dtos/comments/response/comment-created.dto'
+import { UpdateCommentDto } from '../dtos/comments/request/update-comment.dto'
+import { CreateCommentReactionDto } from '../dtos/commentReactions/request/create-comment-reaction.dto'
 
 jest.spyOn(console, 'error').mockImplementation(jest.fn())
 
@@ -21,9 +20,10 @@ describe('UserService', () => {
   let user: CreateUserDto;
   let newUser: User;
   let newPost: Post;
+  let newComment: Comment;
   let postDto: CreatePostDto;
   let commentDto: CreateCommentDto;
-  
+  let reaction: CreateCommentReactionDto;
 
   afterAll(async () => {
       await clearDatabase()
@@ -85,10 +85,7 @@ describe('UserService', () => {
  
     it('should create a new comment', async () => {
       
-      const result = await CommentsService.create(newUser.uuid,commentDto);
-
-      console.log(result);
-      
+      const result = await CommentsService.create(newUser.uuid,commentDto);      
 
       expect(result).toHaveProperty('completed',true);
       });
@@ -114,65 +111,133 @@ describe('UserService', () => {
        expect(result).toHaveProperty('uuid', comment.uuid);
      });
    })
-  // describe('findByUserId', () => {
-  //   it('should return a post if parameters are correct', async () => {
 
-  //     const post = await PostsService.create(newUser.uuid,postDto);
-      
-  //     const result = await PostsService.findByUserId(newUser.uuid,post.uuid);
-      
-  //     expect(result[0].userId).toEqual(newUser.uuid);
-  //     expect(result[0].uuid).toEqual(post.uuid);
-  //   });
+  describe('findByUserId', () => {
+    it('should return a comment if parameters are correct', async () => {
 
-  //    it('should return an empty array if user did not create the post', async () => {
+      const comment = await CommentsService.create(newUser.uuid,commentDto);
+      
+      const result = await CommentsService.findByUserId(newUser.uuid, comment.uuid);
+      
+      expect(result[0].userId).toEqual(newUser.uuid);
+      expect(result[0].uuid).toEqual(comment.uuid);
+    });
+
+     it('should return an empty array if user did not create the comment', async () => {
        
-  //     const post = await PostsService.create(newUser.uuid,postDto);
+      const comment = await CommentsService.create(newUser.uuid, commentDto);
         
-  //     const result = await PostsService.findByUserId(faker.datatype.uuid(),post.uuid);
+      const result = await CommentsService.findByUserId(faker.datatype.uuid(), comment.uuid);
 
-  //     expect(result).toBeEmpty();
-  //    });
+      expect(result).toBeEmpty();
+     });
     
-  // });
+  });
  
-  // describe('update', () => {
+  describe('update', () => {
  
-  //   it('should throw an error if the post does not exist', async () => {
-  //     const data = plainToInstance(UpdatePostDto, {});
+    it('should throw an error if the comment does not exist', async () => {
+      const data = plainToInstance(UpdateCommentDto, {});
 
-  //     await expect(
-  //       PostsService.update(faker.datatype.uuid(), data),
-  //     ).rejects.toThrowError(new NotFound('Post not found'));
-  //   });
+      await expect(
+        CommentsService.update(faker.datatype.uuid(), data),
+      ).rejects.toThrowError(new NotFound('Comment not found'));
+    });
 
-  //   it('should update the post', async () => {
-  //     const data = plainToInstance(UpdatePostDto, { content: 'UPDATE POST' });
-  //     const post = await PostsService.create(newUser.uuid,postDto);
+    it('should update the comment', async () => {
+      const data = plainToInstance(UpdateCommentDto, { content: 'UPDATE COMMENT' });
+      const post = await CommentsService.create(newUser.uuid, commentDto);
 
-  //     const result = await PostsService.update(post.uuid, data);
+      const result = await CommentsService.update(post.uuid, data);
 
-  //     expect(result).toHaveProperty('content', 'UPDATE POST');
-  //   });
-  // })
+      expect(result).toHaveProperty('content', 'UPDATE COMMENT');
+    });
+  })
 
-  // describe('remove', () => {
+  describe('remove', () => {
  
-  //   it('should throw an error if the post does not exist', async () => {
-  //     await expect(
-  //       PostsService.remove(faker.datatype.uuid())
-  //     ).rejects.toThrowError(new NotFound('Post not found'));
+    it('should throw an error if the comment does not exist', async () => {
+      await expect(
+        CommentsService.remove(faker.datatype.uuid())
+      ).rejects.toThrowError(new NotFound('Comment not found'));
 
-  //   });
+    });
 
-  //   it('should remove the post', async () => {
+    it('should remove the post', async () => {
      
-  //     const post = await PostsService.create(newUser.uuid,postDto);
+      const comment = await CommentsService.create(newUser.uuid,commentDto);
 
-  //     const result = await PostsService.remove(post.uuid);
+      const result = await CommentsService.remove(comment.uuid);
 
-  //     expect(result).toHaveProperty('uuid', `${post.uuid}`);
-  //   });
-  // })
+      expect(result).toHaveProperty('uuid', `${comment.uuid}`);
+    });
+  })
+
+  describe('Reactions: ',()=>{
+
+    beforeAll(async ()=>{
+
+      newComment = await prisma.comment.create({
+        data: {
+          ...commentDto,
+          userId: newUser.uuid
+        }
+      }); 
+
+      reaction = plainToInstance(CreateCommentReactionDto, {
+        commentId: newComment.uuid,
+        status: 'L'
+      });
+    });
+
+
+    describe('createReaction',()=>{
+    
+      it('should create a reaction for the comment',async ()=>{
   
+        const result = await CommentsService.createReaction(newUser.uuid,reaction);
+        expect(result).toHaveProperty('status','L');
+  
+      })
+    })
+
+    describe('updateReaction',()=>{
+    
+      it('should update the reaction for the comment',async ()=>{
+  
+        const newReaction = await CommentsService.createReaction(newUser.uuid,reaction);
+
+        const result = await CommentsService.updateReaction(newReaction.uuid,'D')
+
+        expect(result).toHaveProperty('status','D');
+  
+      })
+
+      it('should throw an error if the comment does not exist',async ()=>{
+        expect(async()=>{
+          const result = await CommentsService.updateReaction(faker.datatype.uuid(),'D')
+        })
+        .rejects.toThrowError(new NotFound('Comment Reaction not found'));
+      });
+    })
+
+    describe('findPostReaction',()=>{
+      it('should return the reaction to a post',async ()=>{
+        const newReaction = await CommentsService.createReaction(newUser.uuid,reaction);
+
+        const result = await CommentsService.findCommentReaction(newReaction.commentId,newUser.uuid);
+
+        expect(result[0]).toHaveProperty('status','L');
+        expect(result[0]).toHaveProperty('userId',newReaction.userId);
+      })
+
+      it('should return an empty array if there is no reaction to the comment',async ()=>{
+       
+        const result = await CommentsService.findCommentReaction(faker.datatype.uuid(),newUser.uuid);
+
+        expect(result).toBeEmpty();
+      })
+    })
+
+  })
 })

@@ -40,16 +40,16 @@ export class AuthService {
 
       return token;
     } catch (error) {
+      let throwable = error
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.FOREIGN_KEY_CONSTRAINT:
-            throw new NotFound('User not found');
-          default:
-            throw error;
+            throwable = new NotFound('User not found');
         }
       }
 
-      throw error;
+      throw throwable;
     }
   }
 
@@ -70,9 +70,7 @@ export class AuthService {
   static generateAccessToken(sub: string): TokenDto {
     const now = new Date().getTime()
     const exp = Math.floor(
-      new Date(now).setSeconds(
-        parseInt(process.env.JWT_EXPIRATION_TIME as string, 10),
-      ) / 1000,
+      new Date(now).setSeconds( parseInt(process.env.JWT_EXPIRATION_TIME as string, 10)) / 1000
     );
     const iat = Math.floor(now / 1000);
 
