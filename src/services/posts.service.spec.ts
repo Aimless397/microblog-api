@@ -1,42 +1,34 @@
 import { User, Post } from '@prisma/client'
 import faker from 'faker'
-import jwt from 'jsonwebtoken'
 import 'jest-extended/all'
-import { plainToClass } from 'class-transformer'
-import { UnprocessableEntity, NotFound } from 'http-errors'
+import { plainToInstance } from 'class-transformer'
+import { NotFound } from 'http-errors'
 import { CreateUserDto } from '../dtos/users/request/create-user.dto'
 import { clearDatabase, prisma } from '../prisma'
-import { UserFactory } from '../utils/factories/user.factory'
-import { UpdateUserDto } from '../dtos/users/request/update-user.dto'
-import { UsersService } from './users.service'
-import { AuthService } from './auth.service'
 import { PostsService } from './posts.service'
-import { SendgridService } from './sendgrid.service'
-import { TokenFactory } from '../utils/factories/token.factory'
-import { PostFactory } from '../utils/factories/post.factory'
 import { CreatePostDto } from '../dtos/posts/request/create-post.dto'
 import { hashSync } from 'bcryptjs'
+import { PostCreatedDto } from '../dtos/posts/response/post-created.dto'
+import { UpdatePostDto } from '../dtos/posts/request/update-post.dto'
 
 jest.spyOn(console, 'error').mockImplementation(jest.fn())
 
 describe('UserService', () => {
 
-  let userFactory: UserFactory;
-  let postFactory: PostFactory;
-  let tokenFactory: TokenFactory;
-  let userSample: CreateUserDto;
-  let users: User[];
+  let user: CreateUserDto;
   let newUser: User;
+  let dto: CreatePostDto;
+  
 
-  const post = plainToClass(CreatePostDto, {
-    content: 'content sample',
-    completed: true
-  });
+  afterAll(async () => {
+      await clearDatabase()
+      await prisma.$disconnect()
+  })
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     jest.clearAllMocks();
 
-    const user = plainToClass(CreateUserDto, {
+    user = plainToInstance(CreateUserDto, {
       email: faker.internet.email(),
       firstName: faker.name.firstName(),
       lastName: faker.name.lastName(),
@@ -53,147 +45,112 @@ describe('UserService', () => {
         password: hashSync('passwordSample', 10)
       }
     });
-  });
-
-  afterEach(async () => {
-    await prisma.user.delete({
-      where: {
-        email: newUser.email
-      }
-    })
-  });
-
-  afterAll(async () => {
-    /* await clearDatabase(); */
-    await prisma.$disconnect();
+    dto = plainToInstance(CreatePostDto, {
+      content: 'content sample',
+      completed: true
+    });
   });
 
   describe('find', () => {
     it('should return a list of posts', async () => {
 
-      const dto = plainToClass(CreatePostDto, {
-        newUser,
-        content: 'content sample',
-        verified: true
-      });
-
-      const posts = [...Array(5)].map(async () => await PostsService.create(newUser.uuid, dto));
-      const result = await PostsService.find();
-
+      const posts = [...Array(2)].map(async()=>await PostsService.create(newUser.uuid, dto));
+      
+      const result = await PostsService.find(0,posts.length);
+      
       expect(result.length).toBe(posts.length);
-    })
+    });
   });
 
-  /*  describe('create', () => {
-     it('should throw an error if the user already exists', async () => {
-       const email = faker.internet.email()
-       await userFactory.make({ email })
-       const data = plainToClass(CreateUserDto, {
-         firstName: faker.name.firstName(),
-         lastName: faker.name.lastName(),
-         email,
-         password: faker.internet.password(6),
-         verified: false
-       })
+  describe('create', () => {
  
-       await expect(UsersService.create(data)).rejects.toThrowError(
-         new UnprocessableEntity('email already taken'),
-       )
-     })
- 
-     it('should create a new user', async () => {
-       const spyCreateToken = jest.spyOn(AuthService, 'createToken')
-       const spySendEmail = jest.spyOn(SendgridService, 'sendEmail')
-       const generateAccessToken = jest.spyOn(AuthService, 'generateAccessToken')
-       const data = plainToClass(CreateUserDto, {
-         firstName: faker.name.firstName(),
-         lastName: faker.name.lastName(),
-         email: faker.internet.email(),
-         password: faker.internet.password(6),
-         verified: false
-       })
- 
-       const result = await UsersService.create(data)
- 
-       expect(spyCreateToken).toHaveBeenCalledOnce()
-       expect(spySendEmail).toHaveBeenCalledOnce()
-       expect(generateAccessToken).toHaveBeenCalledOnce()
-       expect(result).toBeTrue()
-     })
-   })
- 
-   describe('findOne', () => {
-     let user: User
+    it('should create a new post', async () => {
+      
+      const result = await PostsService.create(newUser.uuid,dto);
+
+      expect(result).toHaveProperty('completed',true);
+      });
+    });
+
+  describe('findOne', () => {
+
+    let post: PostCreatedDto;
  
      beforeAll(async () => {
-       user = await userFactory.make()
-     })
+       post = await PostsService.create(newUser.uuid, dto);
+     });
  
-     it('should throw an error if the user does not exist', async () => {
+     it('should throw an error if the post does not exist', async () => {
        await expect(
-         UsersService.findOne(faker.datatype.uuid()),
-       ).rejects.toThrowError(new NotFound('No User found'))
-     })
+         PostsService.findOne(faker.datatype.uuid()),
+       ).rejects.toThrowError(new NotFound('No Post found'));
+     });
  
-     it('should return the user', async () => {
-       const result = await UsersService.findOne(user.uuid)
+     it('should return the post', async () => {
+       const result = await PostsService.findOne(post.uuid);
  
-       expect(result).toHaveProperty('uuid', user.uuid)
-     })
+       expect(result).toHaveProperty('uuid', post.uuid);
+     });
    })
+  describe('findByUserId', () => {
+    it('should return a post if parameters are correct', async () => {
+
+      const post = await PostsService.create(newUser.uuid,dto);
+      
+      const result = await PostsService.findByUserId(newUser.uuid,post.uuid);
+      
+      expect(result[0].userId).toEqual(newUser.uuid);
+      expect(result[0].uuid).toEqual(post.uuid);
+    });
+
+     it('should return an empty array if user did not create the post', async () => {
+       
+      const post = await PostsService.create(newUser.uuid,dto);
+        
+      const result = await PostsService.findByUserId(faker.datatype.uuid(),post.uuid);
+
+      expect(result).toBeEmpty();
+     });
+    
+  });
  
-   describe('getUuidFromToken', () => {
+  describe('update', () => {
  
-     it('should return a user uuid from token', async () => {
-       const user = await userFactory.make({})
+    it('should throw an error if the post does not exist', async () => {
+      const data = plainToInstance(UpdatePostDto, {});
+
+      await expect(
+        PostsService.update(faker.datatype.uuid(), data),
+      ).rejects.toThrowError(new NotFound('Post not found'));
+    });
+
+    it('should update the post', async () => {
+      const data = plainToInstance(UpdatePostDto, { content: 'UPDATE POST' });
+      const post = await PostsService.create(newUser.uuid,dto);
+
+      const result = await PostsService.update(post.uuid, data);
+
+      expect(result).toHaveProperty('content', 'UPDATE POST');
+    });
+  })
+
+  describe('remove', () => {
  
-       const token = await AuthService.createToken(user.uuid)
- 
-       const result = await UsersService.getUuidFromToken(token.jti)
- 
-       expect(result).toEqual(user.uuid)
-     })
- 
-   })
- 
-   describe('update', () => {
-     beforeAll(() => {
-       jest.mock('jsonwebtoken', () => ({
-         sign: jest.fn().mockImplementation(() => 'my.jwt.token'),
-       }))
-     })
- 
-     it('should throw an error if the user does not exist', async () => {
-       const data = plainToClass(UpdateUserDto, {})
- 
-       await expect(
-         UsersService.update(faker.datatype.uuid(), data),
-       ).rejects.toThrowError(new NotFound('User not found'))
-     })
- 
-     it('should throw an error if the user tries to update the email with non unique email', async () => {
-       const existingEmail = faker.internet.email()
-       const [user] = await Promise.all([
-         userFactory.make(),
-         userFactory.make({ email: existingEmail }),
-       ])
- 
-       const data = plainToClass(UpdateUserDto, { email: existingEmail })
- 
-       await expect(UsersService.update(user.uuid, data)).rejects.toThrowError(
-         new UnprocessableEntity('email already taken'),
-       )
-     })
- 
-     it('should update the user', async () => {
-       const user = await userFactory.make()
-       const newEmail = faker.internet.email()
-       const dto = plainToClass(UpdateUserDto, { email: newEmail })
- 
-       const result = await UsersService.update(user.uuid, dto)
- 
-       expect(result).toHaveProperty('email', newEmail)
- 
-     })
-   }) */
+    it('should throw an error if the post does not exist', async () => {
+      await expect(
+        PostsService.remove(faker.datatype.uuid())
+      ).rejects.toThrowError(new NotFound('Post not found'));
+
+    });
+
+    it('should remove the post', async () => {
+     
+      const post = await PostsService.create(newUser.uuid,dto);
+
+      const result = await PostsService.remove(post.uuid);
+
+      expect(result).toHaveProperty('uuid', `${post.uuid}`);
+    });
+  })
+  
 })

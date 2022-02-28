@@ -12,8 +12,8 @@ import { PostReactionCreatedDto } from '../dtos/postReactions/response/post-reac
 
 export class PostsService {
   static async find(
-    offset: number = 0,
-    limit: number = 10
+    offset: number,
+    limit: number
   ): Promise<PostDto[]> {
 
     const posts = await prisma.post.findMany({ skip: offset, take: limit, orderBy: { createdAt: 'desc' } });
@@ -64,16 +64,14 @@ export class PostsService {
 
       return plainToClass(PostDto, post);
     } catch (error) {
+      
+      let throwable = error
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Post not found');
-          default:
-            throw error;
+        if(error.code == PrismaErrorEnum.NOT_FOUND){
+          throwable = new NotFound('Post not found');
         }
       }
-
-      throw error;
+      throw throwable;
     }
   };
 
