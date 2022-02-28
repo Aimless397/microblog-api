@@ -10,6 +10,7 @@ import { CreatePostDto } from '../dtos/posts/request/create-post.dto'
 import { hashSync } from 'bcryptjs'
 import { PostCreatedDto } from '../dtos/posts/response/post-created.dto'
 import { UpdatePostDto } from '../dtos/posts/request/update-post.dto'
+import { CreatePostReactionDto } from '../dtos/postReactions/request/create-post-reaction.dto'
 
 jest.spyOn(console, 'error').mockImplementation(jest.fn())
 
@@ -18,6 +19,8 @@ describe('UserService', () => {
   let user: CreateUserDto;
   let newUser: User;
   let dto: CreatePostDto;
+  let reaction: CreatePostReactionDto;
+  let post: Post;
   
 
   afterAll(async () => {
@@ -152,5 +155,72 @@ describe('UserService', () => {
       expect(result).toHaveProperty('uuid', `${post.uuid}`);
     });
   })
+
+  describe('Reactions: ',()=>{
+
+    beforeAll(async ()=>{
+
+      post = await prisma.post.create({
+        data: {
+          ...dto,
+          userId: newUser.uuid
+        }
+      }); 
+
+      reaction = plainToInstance(CreatePostReactionDto, {
+        postId: post.uuid,
+        status: 'L'
+      });
+    });
+
+
+    describe('createReaction',()=>{
+    
+      it('should create a reaction for the post',async ()=>{
   
+        const result = await PostsService.createReaction(newUser.uuid,reaction);
+        expect(result).toHaveProperty('status','L');
+  
+      })
+    })
+
+    describe('updateReaction',()=>{
+    
+      it('should update the reaction for the post',async ()=>{
+  
+        const newReaction = await PostsService.createReaction(newUser.uuid,reaction);
+
+        const result = await PostsService.updateReaction(newReaction.uuid,'D')
+
+        expect(result).toHaveProperty('status','D');
+  
+      })
+
+      it('should throw an error if the post does not exist',async ()=>{
+        expect(async()=>{
+          const result = await PostsService.updateReaction(faker.datatype.uuid(),'D')
+        })
+        .rejects.toThrowError(new NotFound('Post Reaction not found'));
+      });
+    })
+
+    describe('findPostReaction',()=>{
+      it('should return the reaction to a post',async ()=>{
+        const newReaction = await PostsService.createReaction(newUser.uuid,reaction);
+
+        const result = await PostsService.findPostReaction(newReaction.postId,newUser.uuid);
+
+        expect(result[0]).toHaveProperty('status','L');
+        expect(result[0]).toHaveProperty('userId',newReaction.userId);
+      })
+
+      it('should return an empty array if there is no reaction to the post',async ()=>{
+       
+        const result = await PostsService.findPostReaction(faker.datatype.uuid(),newUser.uuid);
+
+        expect(result).toBeEmpty();
+      })
+    })
+
+  })
 })

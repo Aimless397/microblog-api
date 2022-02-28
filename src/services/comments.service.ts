@@ -63,12 +63,13 @@ export class CommentsService {
 
       return plainToInstance(CommentDto, comment)
     } catch (error) {
+      let throwable = error
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code == PrismaErrorEnum.NOT_FOUND) {
-          throw new NotFound('Comment not Found')
+        if(error.code == PrismaErrorEnum.NOT_FOUND){
+          throwable = new NotFound('Comment not found');
         }
       }
-      throw error
+      throw throwable;
     }
   };
 
@@ -84,54 +85,28 @@ export class CommentsService {
 
       return comment;
     } catch (error) {
+      let throwable = error;
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Comment not found');
-          default:
-            throw error;
+            throwable = new NotFound('Comment not found');
         }
       }
-      throw error;
+      throw throwable;
     }
   };
-
-
-
-
-
-
-
-
-
-
-
 
   static async findCommentReaction(
     commentId: string,
     userId: string
   ): Promise<CommentReaction[]> {
-    try {
-      const commentReactionFound = await prisma.commentReaction.findMany({
-        where: {
-          commentId,
-          userId
-        }
-      });
-
-      return commentReactionFound;
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Comment not found');
-          default:
-            throw error;
-        }
+    const commentReactionFound = await prisma.commentReaction.findMany({
+      where: {
+        commentId,
+        userId
       }
-
-      throw error;
-    }
+    });
+    return commentReactionFound;
   };
 
   static async createReaction(
@@ -164,20 +139,16 @@ export class CommentsService {
         }
       });
 
-      console.log("updated: ", commentReactionUpdated);
-
       return commentReactionUpdated;
     } catch (error) {
+      let throwable = error;
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Post not found');
-          default:
-            throw error;
+            throwable = new NotFound('Comment Reaction not found');
         }
       }
-
-      throw error;
+      throw throwable;
     }
   };
 }

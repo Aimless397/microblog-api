@@ -87,16 +87,15 @@ export class PostsService {
 
       return post;
     } catch (error) {
+      let throwable = error;
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Post not found');
-          default:
-            throw error;
+            throwable = new NotFound('Post not found');
         }
       }
 
-      throw error;
+      throw throwable;
     }
   };
 
@@ -104,27 +103,14 @@ export class PostsService {
     postId: string,
     userId: string
   ): Promise<PostReaction[]> {
-    try {
-      const postReactionFound = await prisma.postReaction.findMany({
-        where: {
+    const postReactionFound = await prisma.postReaction.findMany({
+      where: {
           postId,
           userId
-        }
-      });
-
-      return postReactionFound;
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Post not found');
-          default:
-            throw error;
-        }
       }
-
-      throw error;
-    }
+    });
+    return postReactionFound;
+   
   };
 
   static async createReaction(
@@ -155,21 +141,16 @@ export class PostsService {
         }
       });
 
-      console.log("updated: ", postReactionUpdated);
-
-
       return postReactionUpdated;
     } catch (error) {
+      let throwable = error;
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case PrismaErrorEnum.NOT_FOUND:
-            throw new NotFound('Post not found');
-          default:
-            throw error;
+            throwable = new NotFound('Post Reaction not found');
         }
       }
-
-      throw error;
+      throw throwable;
     }
   };
 }
