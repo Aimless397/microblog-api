@@ -5,7 +5,7 @@ import {
   create,
   find,
   me,
-  passwordRecovery,
+  /* passwordRecovery, */
   update,
   verify
 } from '../controllers/users.controller';
@@ -24,8 +24,8 @@ export function usersRoutes(): Router {
     .get(passport.authenticate('jwt', { session: false }), asyncHandler(me))
     .patch(passport.authenticate('jwt', { session: false }), asyncHandler(update));
 
-  router.route('/password-recovery')
-    .patch(passport.authenticate('jwt', { session: false }), asyncHandler(passwordRecovery));
+  /* router.route('/password-recovery')
+    .patch(passport.authenticate('jwt', { session: false }), asyncHandler(passwordRecovery)); */
 
   return router;
 }

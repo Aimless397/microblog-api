@@ -1,0 +1,635 @@
+{
+	"info": {
+		"_postman_id": "6dd06a69-df3d-4049-aae7-65ce5e4324ff",
+		"name": "REST-Module",
+		"description": "This API documentation of the microblog-api challenge describes all the endpoints with its behaviors. In the next lines these endpoints will be described one by one.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "microblog-api",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"jagox28@outlook.com\",\r\n    \"password\": \"password123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/auth/login",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								},
+								"description": "This endpoint allows the user to authenticate within the API with an email and password, returning a unique token to access protected endpoints.\n\nBefore use this endpoint, the user should be created."
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/auth/logout",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"auth",
+										"logout"
+									]
+								},
+								"description": "This endpoint allows the user to log out its user from the API."
+							},
+							"response": []
+						}
+					],
+					"description": "Manage user authentication endpoints:\n\n*   Login.\n*   Logout."
+				},
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "GetAll",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/users",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"users"
+									]
+								},
+								"description": "Returns all the users from database."
+							},
+							"response": []
+						},
+						{
+							"name": "Profile",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/users/me",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								},
+								"description": "Shows the profile of the authenticated user."
+							},
+							"response": []
+						},
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"douglaszs397@hotmail.com\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"Douglas\",\r\n    \"lastName\": \"Zuniga\",\r\n    \"public\": true,\r\n    \"role\": \"moderator\",\r\n    \"emailPublic\": true,\r\n    \"namePublic\": true,\r\n    \"verified\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/users",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"users"
+									]
+								},
+								"description": "Creates a new user with all the columns described down below."
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"verified\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/users/me",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"users",
+										"me"
+									]
+								},
+								"description": "Update any of the user columns described in create endpoint for the logged user."
+							},
+							"response": []
+						},
+						{
+							"name": "Verify",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/users/verify/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYjc4NzQyZS1lOTY2LTQ1YzgtOTNiMS0yZjEyNzQxODJmYzMiLCJpYXQiOjE2NDU4NTgxNjMsImV4cCI6MTY0NTg3NDE0MH0.MlDjGfWgCkhOX4V8h1Pfk1NC5irlKEN-86ltTnRAcJs",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"users",
+										"verify",
+										"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYjc4NzQyZS1lOTY2LTQ1YzgtOTNiMS0yZjEyNzQxODJmYzMiLCJpYXQiOjE2NDU4NTgxNjMsImV4cCI6MTY0NTg3NDE0MH0.MlDjGfWgCkhOX4V8h1Pfk1NC5irlKEN-86ltTnRAcJs"
+									]
+								},
+								"description": "Verifies a user by marking their \"verified\" field as true. The params next to \"verify\" comes as a link from the email received."
+							},
+							"response": []
+						}
+					],
+					"description": "Manage user endpoints:\n\n*   GetAll.\n*   Profile.\n*   Create.\n*   Update.\n*   Verify."
+				},
+				{
+					"name": "Posts",
+					"item": [
+						{
+							"name": "GetAll",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{uri}}/posts?page=0&limit=10",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "Lists all the posts from database. It receives a page and a limit rows value to get them paginated."
+							},
+							"response": []
+						},
+						{
+							"name": "FindOne",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/posts/d615b34e-f29d-488c-ac8f-7f84654c57f5",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"d615b34e-f29d-488c-ac8f-7f84654c57f5"
+									]
+								},
+								"description": "Returns one post identified by uuid."
+							},
+							"response": []
+						},
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil doloremque distinctio reprehenderit quos recusandae suscipit obcaecati iure optio laborum rerum expedita officia, ratione a? Quam maxime deleniti voluptatum provident omnis voluptatem?\",\r\n    \"completed\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/posts",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts"
+									]
+								},
+								"description": "Create one post."
+							},
+							"response": []
+						},
+						{
+							"name": "Draft",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio alias aperiam cumque sed accusamus architecto rerum omnis veritatis fugiat ipsam modi aliquid debitis tempore asperiores, ad cupiditate. Doloribus, quae libero?\",\r\n    \"completed\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/posts",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts"
+									]
+								},
+								"description": "Creates a draft which can be updated as a completed post later."
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"post 6\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/posts/4ddfdd38-95c2-48e2-9bcf-d928f8b2342d",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"4ddfdd38-95c2-48e2-9bcf-d928f8b2342d"
+									]
+								},
+								"description": "Updates all columns from a existing post. It requires an uuid parameter."
+							},
+							"response": []
+						},
+						{
+							"name": "Reaction",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/N",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"N"
+									]
+								},
+								"description": "Changes the reaction of a post. The accepted values are \"L\", \"D\" and \"N\" (from like, dislike and no reaction). It receives an uuuid post as parameter followed by the reaction value."
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/posts/5dfc80eb-126f-4c37-9a6a-5c0fe3888a7c",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"5dfc80eb-126f-4c37-9a6a-5c0fe3888a7c"
+									]
+								},
+								"description": "Deletes a post from uuid."
+							},
+							"response": []
+						}
+					],
+					"description": "Manage post endpoints:\n\n*   GetAll.\n*   FindOne.\n*   Create.\n*   Draft\n*   Update.\n*   Reaction.\n*   Delete."
+				},
+				{
+					"name": "Comments",
+					"item": [
+						{
+							"name": "GetAll",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/comments?page=0&limit=10",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "Lists all the comments from database. It receives a post uuid to identify the post it belongs to, also receives a page and a limit rows value to get them paginated."
+							},
+							"response": []
+						},
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere odit ad voluptate expedita tenetur sunt totam sit autem cupiditate quaerat molestiae sapiente quidem eos ab veritatis, tempora, atque ut maiores! sit amet consectetur adipisicing elit. Facere odit ad voluptate expedita tenetur sunt totam sit autem cupiditate quaerat molestiae sapiente quidem eos ab veritatis, tempora, atque ut maiores!\",\r\n    \"completed\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/comments",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"comments"
+									]
+								},
+								"description": "Creates a comment for a specific post."
+							},
+							"response": []
+						},
+						{
+							"name": "Draft",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Lorem, ipsum dolor sit amet\",\r\n    \"completed\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/comments",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"comments"
+									]
+								},
+								"description": "Creates a draft for a specific post. It can be mark as a completed comment in update comment section."
+							},
+							"response": []
+						},
+						{
+							"name": "Update",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere odit ad voluptate expedita\",\r\n    \"completed\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/comments/1de8f41c-7d09-4621-8a62-5355c79c7cab",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"comments",
+										"1de8f41c-7d09-4621-8a62-5355c79c7cab"
+									]
+								},
+								"description": "Updates each column of the comment table for a specific post."
+							},
+							"response": []
+						},
+						{
+							"name": "Reaction",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/comments/1de8f41c-7d09-4621-8a62-5355c79c7cab/L",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"comments",
+										"1de8f41c-7d09-4621-8a62-5355c79c7cab",
+										"L"
+									]
+								},
+								"description": "Changes the reaction of a comment. The accepted values are \"L\", \"D\" and \"N\" (from like, dislike and no reaction). It receives an uuuid comment as parameter followed by the reaction value."
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{uri}}/posts/a9d11db6-2b8d-4fcd-9e35-b83bf643586d/comments/1f7e1619-2806-4496-9e82-f3d6da603786",
+									"host": [
+										"{{uri}}"
+									],
+									"path": [
+										"posts",
+										"a9d11db6-2b8d-4fcd-9e35-b83bf643586d",
+										"comments",
+										"1f7e1619-2806-4496-9e82-f3d6da603786"
+									]
+								},
+								"description": "Delete an existing comment."
+							},
+							"response": []
+						}
+					],
+					"description": "Manage comment endpoints:\n\n*   GetAll.\n*   Create.\n*   Draft\n*   Update.\n*   Reaction.\n*   Delete."
+				}
+			],
+			"description": "Microblog-api consists in a REST service which allows to a user read, create, update or delete a post depending on whether it is authenticated. Also it allow to create comments for any post, and create a reaction and a draft for posts and comments."
+		}
+	]
+}
